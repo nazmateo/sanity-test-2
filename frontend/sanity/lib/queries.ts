@@ -1,6 +1,43 @@
 import {defineQuery} from 'next-sanity'
 
-export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
+const navigationLinksProjection = /* groq */ `
+  ...,
+  link{
+    ...,
+    "internalPageSlug": internalPage->slug.current
+  },
+  subLinks[]{
+    ...,
+    link{
+      ...,
+      "internalPageSlug": internalPage->slug.current
+    }
+  }
+`
+
+export const settingsQuery = defineQuery(`
+  *[_type == "settings"][0]{
+    ...,
+    primaryMenu{
+      ...,
+      links[]{
+        ${navigationLinksProjection}
+      }
+    },
+    secondaryMenu{
+      ...,
+      links[]{
+        ${navigationLinksProjection}
+      }
+    },
+    menuGroups[]{
+      ...,
+      links[]{
+        ${navigationLinksProjection}
+      }
+    }
+  }
+`)
 
 const postFields = /* groq */ `
   _id,
@@ -62,6 +99,14 @@ export const getPageQuery = defineQuery(`
     _type,
     name,
     slug,
+    seo{
+      ...,
+      ogImage{
+        ...,
+        asset->
+      }
+    },
+    structuredData,
     "pageBuilder": pageBuilder[]{
       ...,
       ${cbButtonWithLinkProjection},
@@ -111,10 +156,30 @@ export const getPageQuery = defineQuery(`
 `)
 
 export const sitemapData = defineQuery(`
-  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {
-    "slug": slug.current,
+  *[
+    (_type == "page" && defined(slug.current)) ||
+    (_type == "post" && defined(slug.current)) ||
+    (_type == "legalPage" && defined(slug))
+  ] | order(_type asc) {
+    "slug": select(_type == "legalPage" => slug, slug.current),
     _type,
     _updatedAt,
+  }
+`)
+
+export const legalPageBySlugQuery = defineQuery(`
+  *[_type == "legalPage" && slug == $slug][0]{
+    _id,
+    title,
+    slug,
+    content,
+    seo{
+      ...,
+      ogImage{
+        ...,
+        asset->
+      }
+    }
   }
 `)
 

@@ -4,17 +4,18 @@ import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
 import {Inter, IBM_Plex_Mono} from 'next/font/google'
 import {draftMode} from 'next/headers'
+import Script from 'next/script'
 import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
 import {Toaster} from 'sonner'
 
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
-import Header from '@/app/components/Header'
+import Header, {type LayoutSettings} from '@/app/components/Header'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
-import {resolveOpenGraphImage} from '@/sanity/lib/utils'
+import {normalizeInlineScript, resolveOpenGraphImage} from '@/sanity/lib/utils'
 import {handleError} from '@/app/client-utils'
 
 /**
@@ -47,7 +48,19 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: toPlainText(description),
     openGraph: {
+      type: 'website',
+      title,
+      description: toPlainText(description),
       images: ogImage ? [ogImage] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: toPlainText(description),
+      images: ogImage ? [ogImage.url] : [],
+    },
+    icons: {
+      icon: [{url: '/images/logo-black.svg', sizes: 'any'}],
     },
   }
 }
@@ -66,11 +79,33 @@ const ibmPlexMono = IBM_Plex_Mono({
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const {isEnabled: isDraftMode} = await draftMode()
+  const [{isEnabled: isDraftMode}, {data: settings}] = await Promise.all([
+    draftMode(),
+    sanityFetch({
+      query: settingsQuery,
+    }),
+  ])
+
+  const layoutSettings = settings as (LayoutSettings & {
+    gtmScript?: string | null
+    gaScript?: string | null
+    cookiePolicyScript?: string | null
+  }) | null
+  const lang = 'en-US'
+  const gtmScript = normalizeInlineScript(layoutSettings?.gtmScript)
+  const gaScript = normalizeInlineScript(layoutSettings?.gaScript)
+  const cookiePolicyScript = normalizeInlineScript(layoutSettings?.cookiePolicyScript)
 
   return (
-    <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
+    <html lang={lang} className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
       <body>
+        {gtmScript ? <Script id="settings-gtm-script" strategy="afterInteractive">{gtmScript}</Script> : null}
+        {gaScript ? <Script id="settings-ga-script" strategy="afterInteractive">{gaScript}</Script> : null}
+        {cookiePolicyScript ? (
+          <Script id="settings-cookie-policy-script" strategy="afterInteractive">
+            {cookiePolicyScript}
+          </Script>
+        ) : null}
         <section className="min-h-screen pt-24">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
@@ -83,9 +118,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
-          <Header />
+          <Header settings={layoutSettings} />
           <main className="">{children}</main>
-          <Footer />
+          <Footer settings={layoutSettings} />
         </section>
         <SpeedInsights />
       </body>

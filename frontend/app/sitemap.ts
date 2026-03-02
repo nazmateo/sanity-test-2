@@ -1,7 +1,7 @@
 import {MetadataRoute} from 'next'
 import {sanityFetch} from '@/sanity/lib/live'
-import {sitemapData} from '@/sanity/lib/queries'
-import {headers} from 'next/headers'
+import {settingsQuery, sitemapData} from '@/sanity/lib/queries'
+import {ensureAbsoluteUrl} from '@/sanity/lib/utils'
 
 /**
  * This file creates a sitemap (sitemap.xml) for the application. Learn more about sitemaps in Next.js here: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
@@ -9,21 +9,27 @@ import {headers} from 'next/headers'
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const allPostsAndPages = await sanityFetch({
-    query: sitemapData,
-  })
-  const headersList = await headers()
+  const [{data: allPostsAndPages}, {data: settings}] = await Promise.all([
+    sanityFetch({
+      query: sitemapData,
+    }),
+    sanityFetch({
+      query: settingsQuery,
+    }),
+  ])
+
   const sitemap: MetadataRoute.Sitemap = []
-  const domain: string = headersList.get('host') as string
+  const domain = ensureAbsoluteUrl(settings?.ogImage?.metadataBase)
+
   sitemap.push({
-    url: domain as string,
+    url: domain,
     lastModified: new Date(),
     priority: 1,
     changeFrequency: 'monthly',
   })
 
-  if (allPostsAndPages != null && allPostsAndPages.data.length != 0) {
-    let priority: number
+  if (allPostsAndPages != null && allPostsAndPages.length !== 0) {
+    let priority: number = 0.5
     let changeFrequency:
       | 'monthly'
       | 'always'
@@ -33,9 +39,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       | 'yearly'
       | 'never'
       | undefined
-    let url: string
+    let url: string = domain
 
-    for (const p of allPostsAndPages.data) {
+    for (const p of allPostsAndPages) {
       switch (p._type) {
         case 'page':
           priority = 0.8
@@ -46,6 +52,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority = 0.5
           changeFrequency = 'never'
           url = `${domain}/posts/${p.slug}`
+          break
+        case 'legalPage':
+          priority = 0.3
+          changeFrequency = 'yearly'
+          url = `${domain}/${p.slug}`
           break
       }
       sitemap.push({

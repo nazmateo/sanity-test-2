@@ -1,9 +1,11 @@
 type BlockType = {type: string}
 
 export const pageBuilderAtomBlockTypes: BlockType[] = [
+  {type: 'cbButton'},
   {type: 'cbHeading'},
   {type: 'cbParagraph'},
   {type: 'cbWysiwyg'},
+  {type: 'cbHtml'},
   {type: 'cbImage'},
 ]
 

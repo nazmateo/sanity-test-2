@@ -78,22 +78,6 @@ export type BlockContent = Array<
     }
 >
 
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
-}
-
 export type CbWysiwyg = {
   _type: 'cbWysiwyg'
   content?: BlockContentTextOnly
@@ -117,6 +101,36 @@ export type CbNavigationLink = {
   _type: 'cbNavigationLink'
   label?: string
   link?: CbLink
+}
+
+export type MenuSubLink = {
+  _type: 'menuSubLink'
+  itemId: string
+  label: string
+  link: CbLink
+}
+
+export type MenuLink = {
+  _type: 'menuLink'
+  itemId: string
+  label: string
+  link: CbLink
+  subLinks?: Array<
+    {
+      _key: string
+    } & MenuSubLink
+  >
+}
+
+export type MenuGroup = {
+  _type: 'menuGroup'
+  menuId: string
+  title?: string
+  links: Array<
+    {
+      _key: string
+    } & MenuLink
+  >
 }
 
 export type SanityFileAssetReference = {
@@ -190,6 +204,9 @@ export type CbGroup = {
   children?: Array<
     | ({
         _key: string
+      } & CbButton)
+    | ({
+        _key: string
       } & CbHeading)
     | ({
         _key: string
@@ -197,6 +214,9 @@ export type CbGroup = {
     | ({
         _key: string
       } & CbWysiwyg)
+    | ({
+        _key: string
+      } & CbHtml)
     | ({
         _key: string
       } & CbImage)
@@ -227,6 +247,9 @@ export type CbCover = {
   content?: Array<
     | ({
         _key: string
+      } & CbButton)
+    | ({
+        _key: string
       } & CbHeading)
     | ({
         _key: string
@@ -234,6 +257,9 @@ export type CbCover = {
     | ({
         _key: string
       } & CbWysiwyg)
+    | ({
+        _key: string
+      } & CbHtml)
     | ({
         _key: string
       } & CbImage)
@@ -254,6 +280,9 @@ export type CbColumn = {
   children?: Array<
     | ({
         _key: string
+      } & CbButton)
+    | ({
+        _key: string
       } & CbHeading)
     | ({
         _key: string
@@ -261,6 +290,9 @@ export type CbColumn = {
     | ({
         _key: string
       } & CbWysiwyg)
+    | ({
+        _key: string
+      } & CbHtml)
     | ({
         _key: string
       } & CbImage)
@@ -301,6 +333,48 @@ export type CbButton = {
   link?: CbLink
 }
 
+export type LegalPage = {
+  _id: string
+  _type: 'legalPage'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: 'privacy-policy' | 'terms-and-conditions'
+  content: BlockContent
+  seo?: {
+    metaDescription?: string
+    canonicalUrl?: string
+    noIndex?: boolean
+    ogTitle?: string
+    ogDescription?: string
+    ogImage?: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: 'image'
+    }
+  }
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -329,6 +403,21 @@ export type Settings = {
     _type: 'block'
     _key: string
   }>
+  logo?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt: string
+    _type: 'image'
+  }
+  primaryMenu: MenuGroup
+  secondaryMenu: MenuGroup
+  menuGroups?: Array<
+    {
+      _key: string
+    } & MenuGroup
+  >
   ogImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -338,6 +427,9 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
+  gtmScript?: string
+  gaScript?: string
+  cookiePolicyScript?: string
 }
 
 export type Page = {
@@ -348,6 +440,23 @@ export type Page = {
   _rev: string
   name: string
   slug: Slug
+  seo?: {
+    metaTitle?: string
+    metaDescription?: string
+    canonicalUrl?: string
+    noIndex?: boolean
+    ogTitle?: string
+    ogDescription?: string
+    ogImage?: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: 'image'
+    }
+  }
+  structuredData?: string
   pageBuilder?: Array<
     | ({
         _key: string
@@ -615,12 +724,13 @@ export type AllSanitySchemaTypes =
   | PageReference
   | SanityImageAssetReference
   | BlockContent
-  | SanityImageCrop
-  | SanityImageHotspot
   | CbWysiwyg
   | CbParagraph
   | CbNavigation
   | CbNavigationLink
+  | MenuSubLink
+  | MenuLink
+  | MenuGroup
   | SanityFileAssetReference
   | CbMedia
   | CbList
@@ -635,6 +745,9 @@ export type AllSanitySchemaTypes =
   | CbColumn
   | CbButtons
   | CbButton
+  | LegalPage
+  | SanityImageCrop
+  | SanityImageHotspot
   | Settings
   | Page
   | Slug

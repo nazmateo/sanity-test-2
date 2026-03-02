@@ -7,15 +7,24 @@ import GetStartedCode from '@/app/components/GetStartedCode'
 import SideBySideIcons from '@/app/components/SideBySideIcons'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
-import {dataAttr} from '@/sanity/lib/utils'
+import {dataAttr, ensureAbsoluteUrl} from '@/sanity/lib/utils'
 
 export default async function Page() {
   const {data: settings} = await sanityFetch({
     query: settingsQuery,
   })
+  const siteUrl = ensureAbsoluteUrl(settings?.ogImage?.metadataBase)
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: settings?.title || 'Sanity + Next.js',
+    url: siteUrl,
+    description: settings?.title || 'Website',
+  }
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteJsonLd)}} />
       <div className="relative">
         <div className="relative bg-[url(/images/tile-1-black.png)] bg-size-[5px]">
           <div className="bg-gradient-to-b from-white w-full h-full absolute top-0"></div>

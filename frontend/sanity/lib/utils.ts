@@ -1,4 +1,3 @@
-import {Link} from '@/sanity.types'
 import {dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
@@ -28,7 +27,15 @@ export function resolveOpenGraphImage(
 }
 
 // Depending on the type of link, we need to fetch the corresponding page, post, or URL.  Otherwise return null.
-export function linkResolver(link: Link | DereferencedLink | undefined) {
+type LinkValue = {
+  linkType?: 'href' | 'page' | 'post'
+  href?: string
+  page?: string | null
+  post?: string | null
+  openInNewTab?: boolean
+}
+
+export function linkResolver(link: LinkValue | DereferencedLink | undefined) {
   if (!link) return null
 
   // If linkType is not set but href is, lets set linkType to "href".  This comes into play when pasting links into the portable text editor because a link type is not assumed.
@@ -61,4 +68,75 @@ export function dataAttr(config: DataAttributeConfig) {
     dataset,
     baseUrl: studioUrl,
   }).combine(config)
+}
+
+type ContentLink = {
+  linkType?: 'external' | 'internal' | null
+  internalTargetType?: 'page' | 'path' | null
+  internalPageSlug?: string | null
+  externalUrl?: string | null
+  internalPath?: string | null
+  openInNewTab?: boolean | null
+} | null
+
+export function resolveContentLinkHref(link?: ContentLink): string | null {
+  if (!link) {
+    return null
+  }
+
+  if (
+    link.linkType === 'internal' &&
+    (link.internalTargetType === 'page' || link.internalTargetType == null) &&
+    link.internalPageSlug
+  ) {
+    return `/${link.internalPageSlug}`
+  }
+
+  if (link.linkType === 'internal' && link.internalPath) {
+    return link.internalPath.startsWith('/') ? link.internalPath : `/${link.internalPath}`
+  }
+
+  if (link.linkType === 'external' && link.externalUrl) {
+    return link.externalUrl
+  }
+
+  return null
+}
+
+export function isExternalContentLink(link?: ContentLink): boolean {
+  return link?.linkType === 'external'
+}
+
+export function normalizeInlineScript(script?: string | null): string {
+  if (!script) {
+    return ''
+  }
+
+  const trimmed = script.trim()
+  return trimmed.replace(/<\/?script[^>]*>/gi, '').trim()
+}
+
+export function parseJsonObject(value?: string | null): Record<string, unknown> | null {
+  if (!value) {
+    return null
+  }
+
+  try {
+    const parsed = JSON.parse(value)
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null
+  } catch {
+    return null
+  }
+}
+
+export function ensureAbsoluteUrl(value?: string | null, fallback = 'http://localhost:3000'): string {
+  if (value) {
+    try {
+      return new URL(value).toString().replace(/\/$/, '')
+    } catch {
+      // Ignore invalid absolute URL and use fallback.
+    }
+  }
+
+  return fallback
 }

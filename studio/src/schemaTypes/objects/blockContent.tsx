@@ -1,5 +1,4 @@
 import {defineArrayMember, defineType, defineField} from 'sanity'
-import type {Link} from '../../../sanity.types'
 
 /**
  * This is the schema definition for the rich text fields used for
@@ -47,7 +46,7 @@ export const blockContent = defineType({
                 hidden: ({parent}) => parent?.linkType !== 'href' && parent?.linkType != null,
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
-                    const parent = context.parent as Link
+                    const parent = context.parent as {linkType?: string} | undefined
                     if (parent?.linkType === 'href' && !value) {
                       return 'URL is required when Link Type is URL'
                     }
@@ -62,7 +61,7 @@ export const blockContent = defineType({
                 hidden: ({parent}) => parent?.linkType !== 'page',
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
-                    const parent = context.parent as Link
+                    const parent = context.parent as {linkType?: string} | undefined
                     if (parent?.linkType === 'page' && !value) {
                       return 'Page reference is required when Link Type is Page'
                     }

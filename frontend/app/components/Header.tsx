@@ -1,32 +1,130 @@
 import Link from 'next/link'
-import {settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
 
-export default async function Header() {
-  const {data: settings} = await sanityFetch({
-    query: settingsQuery,
+import Image from '@/app/components/SanityImage'
+import {isExternalContentLink, resolveContentLinkHref} from '@/sanity/lib/utils'
+
+type MenuLink = {
+  _key?: string
+  itemId?: string | null
+  label?: string | null
+  link?: {
+    linkType?: 'external' | 'internal' | null
+    internalTargetType?: 'page' | 'path' | null
+    internalPageSlug?: string | null
+    externalUrl?: string | null
+    internalPath?: string | null
+    openInNewTab?: boolean | null
+  } | null
+  subLinks?: MenuLink[] | null
+}
+
+type MenuGroup = {
+  menuId?: string | null
+  title?: string | null
+  links?: MenuLink[] | null
+}
+
+export type LayoutSettings = {
+  title?: string | null
+  logo?: {
+    asset?: {_ref?: string} | null
+    alt?: string | null
+  } | null
+  primaryMenu?: MenuGroup | null
+  secondaryMenu?: MenuGroup | null
+  menuGroups?: MenuGroup[] | null
+}
+
+function MenuLinks({items}: {items?: MenuLink[] | null}) {
+  if (!items?.length) {
+    return null
+  }
+
+  return items.map((item, index) => {
+    const href = resolveContentLinkHref(item.link)
+    if (!href) {
+      return null
+    }
+
+    const hasSubLinks = Boolean(item.subLinks?.length)
+    const key = item.itemId || item._key || `${item.label || 'nav-item'}-${index}`
+    const isExternal = isExternalContentLink(item.link) && item.link?.openInNewTab
+
+    return (
+      <li key={key} data-menu-item-id={item.itemId || undefined} className={hasSubLinks ? 'relative group' : undefined}>
+        <Link
+          href={href}
+          className="hover:underline"
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+        >
+          {item.label || 'Link'}
+        </Link>
+        {hasSubLinks ? (
+          <ul className="absolute left-0 mt-2 hidden min-w-48 rounded-md border border-gray-100 bg-white p-2 shadow-md group-hover:block">
+            {item.subLinks?.map((subLink, subIndex) => {
+              const subHref = resolveContentLinkHref(subLink.link)
+              if (!subHref) {
+                return null
+              }
+              const subIsExternal = isExternalContentLink(subLink.link) && subLink.link?.openInNewTab
+              return (
+                <li key={subLink.itemId || subLink._key || `${key}-sub-${subIndex}`} data-menu-item-id={subLink.itemId || undefined}>
+                  <Link
+                    href={subHref}
+                    className="block rounded px-2 py-1 text-sm hover:bg-gray-50"
+                    target={subIsExternal ? '_blank' : undefined}
+                    rel={subIsExternal ? 'noopener noreferrer' : undefined}
+                  >
+                    {subLink.label || 'Sub link'}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        ) : null}
+      </li>
+    )
   })
+}
+
+export default function Header({settings}: {settings?: LayoutSettings | null}) {
+  const logoAssetRef = settings?.logo?.asset?._ref
+  const secondaryLinks = settings?.secondaryMenu?.links || []
+  const primaryLinks = settings?.primaryMenu?.links || []
 
   return (
-    <header className="fixed z-50 h-24 inset-0 bg-white/80 flex items-center backdrop-blur-lg">
-      <div className="container py-6 px-2 sm:px-6">
-        <div className="flex items-center justify-between gap-5">
+    <header className="fixed z-50 inset-x-0 top-0 bg-white/90 backdrop-blur-lg border-b border-gray-100">
+      <div className="container px-2 sm:px-6">
+        <div className="flex items-center justify-end gap-5 py-2 border-b border-gray-100 text-xs font-mono text-gray-600">
+          <nav aria-label="Secondary navigation" data-menu-group-id={settings?.secondaryMenu?.menuId || 'secondary'}>
+            <ul role="list" className="flex items-center gap-4 md:gap-6 leading-5 tracking-tight">
+              <MenuLinks items={secondaryLinks} />
+            </ul>
+          </nav>
+        </div>
+        <div className="flex items-center justify-between gap-5 py-4">
           <Link className="flex items-center gap-2" href="/">
-            <span className="text-lg sm:text-2xl pl-2 font-semibold">
-              {settings?.title || 'Sanity + Next.js'}
-            </span>
+            {logoAssetRef ? (
+              <Image
+                id={logoAssetRef}
+                alt={settings?.logo?.alt || settings?.title || 'Site logo'}
+                width={160}
+                height={48}
+                className="h-10 w-auto"
+                mode="contain"
+              />
+            ) : (
+              <span className="text-lg sm:text-2xl pl-2 font-semibold">{settings?.title || 'Sanity + Next.js'}</span>
+            )}
           </Link>
 
-          <nav>
+          <nav aria-label="Primary navigation" data-menu-group-id={settings?.primaryMenu?.menuId || 'primary'}>
             <ul
               role="list"
               className="flex items-center gap-4 md:gap-6 leading-5 text-xs sm:text-base tracking-tight font-mono"
             >
-              <li>
-                <Link href="/about" className="hover:underline">
-                  About
-                </Link>
-              </li>
+              <MenuLinks items={primaryLinks} />
 
               <li className="sm:before:w-[1px] sm:before:bg-gray-200 before:block flex sm:gap-4 md:gap-6">
                 <Link
@@ -36,14 +134,6 @@ export default async function Header() {
                   rel="noopener noreferrer"
                 >
                   <span className="whitespace-nowrap">View on GitHub</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="hidden sm:block h-4 sm:h-6"
-                  >
-                    <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z"></path>
-                  </svg>
                 </Link>
               </li>
             </ul>

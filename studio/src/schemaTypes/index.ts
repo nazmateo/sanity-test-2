@@ -1,4 +1,5 @@
 import {page} from './documents/page'
+import {legalPage} from './documents/legalPage'
 import {settings} from './singletons/settings'
 import {blockContent} from './objects/blockContent'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
@@ -15,6 +16,9 @@ import cbLink from './objects/link'
 import cbListItem from './objects/list-item'
 import cbList from './objects/list'
 import cbMedia from './objects/media'
+import {menuGroup} from './objects/menuGroup'
+import {menuLink} from './objects/menuLink'
+import {menuSubLink} from './objects/menuSubLink'
 import cbNavigationLink from './objects/navigation-link'
 import cbNavigation from './objects/navigation'
 import cbParagraph from './objects/paragraph'
@@ -27,6 +31,7 @@ export const schemaTypes = [
   settings,
   // Documents
   page,
+  legalPage,
   // Objects
   cbButton,
   cbButtons,
@@ -41,6 +46,9 @@ export const schemaTypes = [
   cbListItem,
   cbList,
   cbMedia,
+  menuGroup,
+  menuLink,
+  menuSubLink,
   cbNavigationLink,
   cbNavigation,
   cbParagraph,
