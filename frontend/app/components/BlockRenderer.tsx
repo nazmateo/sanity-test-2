@@ -25,12 +25,22 @@ import {
   type CbMedia,
   type PageBuilderSection,
 } from '@/sanity/lib/types'
+import {dataAttr} from '@/sanity/lib/utils'
 
 type BlockRendererProps = {
   block: PageBuilderSection
   index: number
   pageType: string
   pageId: string
+  blockPath: string
+  isDraftMode: boolean
+}
+
+function toArrayItemPath(arrayPath: string, key: string | undefined, index: number): string {
+  if (key) {
+    return `${arrayPath}[_key=="${key}"]`
+  }
+  return `${arrayPath}[${index}]`
 }
 
 function resolveLinkHref(link?: CbLink | null, fallbackUrl?: string | null): string | null {
@@ -57,9 +67,18 @@ function isExternalLink(link?: CbLink | null): boolean {
   return link?.linkType === 'external'
 }
 
-function normalizeHeadingLevel(level?: string | number | null): 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' {
+function normalizeHeadingLevel(
+  level?: string | number | null,
+): 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' {
   if (typeof level === 'string') {
-    if (level === 'h1' || level === 'h2' || level === 'h3' || level === 'h4' || level === 'h5' || level === 'h6') {
+    if (
+      level === 'h1' ||
+      level === 'h2' ||
+      level === 'h3' ||
+      level === 'h4' ||
+      level === 'h5' ||
+      level === 'h6'
+    ) {
       return level
     }
     return 'h2'
@@ -122,7 +141,11 @@ function resolveMediaUrls(media?: CbMedia | null) {
   }
 }
 
-function renderMedia(media?: CbMedia | null, fallbackUrl?: string | null, fallbackAlt?: string | null) {
+function renderMedia(
+  media?: CbMedia | null,
+  fallbackUrl?: string | null,
+  fallbackAlt?: string | null,
+) {
   const resolved = resolveMediaUrls(media)
   const mediaType = resolved.mediaType
   const url = (mediaType === 'video' ? resolved.videoUrl : resolved.imageUrl) || fallbackUrl || ''
@@ -150,79 +173,172 @@ function renderButton(button: CbButton, key?: string) {
         href={href || '#'}
         className="inline-flex"
         target={isExternalLink(button.link) && button.link?.openInNewTab ? '_blank' : undefined}
-        rel={isExternalLink(button.link) && button.link?.openInNewTab ? 'noopener noreferrer' : undefined}
+        rel={
+          isExternalLink(button.link) && button.link?.openInNewTab
+            ? 'noopener noreferrer'
+            : undefined
+        }
       >
-        <Button>
-          {text}
-        </Button>
+        <Button>{text}</Button>
       </NavigationLink>
     )
   }
 
+  return <Button key={key}>{text}</Button>
+}
+
+function renderColumnContent(
+  column: CbColumn,
+  pageId: string,
+  pageType: string,
+  columnPath: string,
+  isDraftMode: boolean,
+) {
   return (
-    <Button key={key}>
-      {text}
-    </Button>
+    <div
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: `${columnPath}.children`,
+            }).toString()
+          : undefined
+      }
+    >
+      {(column.children || []).map((child, childIndex) => (
+        <BlockRenderer
+          key={child._key || `${column._key || 'column'}-${childIndex}`}
+          block={child}
+          index={childIndex}
+          pageId={pageId}
+          pageType={pageType}
+          blockPath={toArrayItemPath(`${columnPath}.children`, child._key, childIndex)}
+          isDraftMode={isDraftMode}
+        />
+      ))}
+    </div>
   )
 }
 
-function renderColumnContent(column: CbColumn, pageId: string, pageType: string) {
-  return (column.children || []).map((child, childIndex) => (
-    <BlockRenderer
-      key={child._key || `${column._key || 'column'}-${childIndex}`}
-      block={child}
-      index={childIndex}
-      pageId={pageId}
-      pageType={pageType}
-    />
-  ))
+function renderGroupContent(
+  group: CbGroup,
+  pageId: string,
+  pageType: string,
+  groupPath: string,
+  isDraftMode: boolean,
+) {
+  return (
+    <div
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: `${groupPath}.children`,
+            }).toString()
+          : undefined
+      }
+    >
+      {(group.children || []).map((child, childIndex) => (
+        <BlockRenderer
+          key={child._key || `${group._key || 'group'}-${childIndex}`}
+          block={child}
+          index={childIndex}
+          pageId={pageId}
+          pageType={pageType}
+          blockPath={toArrayItemPath(`${groupPath}.children`, child._key, childIndex)}
+          isDraftMode={isDraftMode}
+        />
+      ))}
+    </div>
+  )
 }
 
-function renderGroupContent(group: CbGroup, pageId: string, pageType: string) {
-  return (group.children || []).map((child, childIndex) => (
-    <BlockRenderer
-      key={child._key || `${group._key || 'group'}-${childIndex}`}
-      block={child}
-      index={childIndex}
-      pageId={pageId}
-      pageType={pageType}
-    />
-  ))
+function renderCoverContent(
+  cover: CbCover,
+  pageId: string,
+  pageType: string,
+  coverPath: string,
+  isDraftMode: boolean,
+) {
+  return (
+    <div
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: `${coverPath}.content`,
+            }).toString()
+          : undefined
+      }
+    >
+      {(cover.content || []).map((child, childIndex) => (
+        <BlockRenderer
+          key={child._key || `${cover._key || 'cover'}-${childIndex}`}
+          block={child}
+          index={childIndex}
+          pageId={pageId}
+          pageType={pageType}
+          blockPath={toArrayItemPath(`${coverPath}.content`, child._key, childIndex)}
+          isDraftMode={isDraftMode}
+        />
+      ))}
+    </div>
+  )
 }
 
-function renderCoverContent(cover: CbCover, pageId: string, pageType: string) {
-  return (cover.content || []).map((child, childIndex) => (
-    <BlockRenderer
-      key={child._key || `${cover._key || 'cover'}-${childIndex}`}
-      block={child}
-      index={childIndex}
-      pageId={pageId}
-      pageType={pageType}
-    />
-  ))
-}
-
-export default function BlockRenderer({block, index, pageType, pageId}: BlockRendererProps) {
+export default function BlockRenderer({
+  block,
+  index,
+  pageType,
+  pageId,
+  blockPath,
+  isDraftMode,
+}: BlockRendererProps) {
   const key = block._key || `${block._type}-${index}`
+  const blockDataAttr = isDraftMode
+    ? dataAttr({
+        id: pageId,
+        type: pageType,
+        path: blockPath,
+      }).toString()
+    : undefined
 
   switch (block._type) {
     case 'cbHeading': {
       const as = normalizeHeadingLevel(block.level)
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Heading as={as}>{block.content || ''}</Heading>
         </BlockSlot>
       )
     }
     case 'cbParagraph':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Paragraph>{block.content || ''}</Paragraph>
         </BlockSlot>
       )
     case 'cbWysiwyg':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <div className="prose">
             <PortableText value={Array.isArray(block.content) ? (block.content as any[]) : []} />
           </div>
@@ -230,49 +346,124 @@ export default function BlockRenderer({block, index, pageType, pageId}: BlockRen
       )
     case 'cbHtml':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Html html={block.content || ''} />
         </BlockSlot>
       )
     case 'cbImage':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           {renderMedia(block.media, block.url, block.alt)}
         </BlockSlot>
       )
     case 'cbButton':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           {renderButton(block)}
         </BlockSlot>
       )
     case 'cbButtons':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
-          <Buttons>{(block.items || []).map((item, i) => renderButton(item, item._key || `${key}-${i}`))}</Buttons>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
+          <Buttons>
+            {(block.items || []).map((item, i) => (
+              <span
+                key={item._key || `${key}-${i}`}
+                data-sanity={
+                  isDraftMode
+                    ? dataAttr({
+                        id: pageId,
+                        type: pageType,
+                        path: toArrayItemPath(`${blockPath}.items`, item._key, i),
+                      }).toString()
+                    : undefined
+                }
+              >
+                {renderButton(item, item._key || `${key}-${i}`)}
+              </span>
+            ))}
+          </Buttons>
         </BlockSlot>
       )
     case 'cbList':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <List kind={block.ordered ? 'ordered' : 'unordered'}>
             {(block.items || []).map((item, i) => (
-              <ListItem key={item._key || `${key}-${i}`}>{item.content || ''}</ListItem>
+              <ListItem
+                key={item._key || `${key}-${i}`}
+                data-sanity={
+                  isDraftMode
+                    ? dataAttr({
+                        id: pageId,
+                        type: pageType,
+                        path: toArrayItemPath(`${blockPath}.items`, item._key, i),
+                      }).toString()
+                    : undefined
+                }
+              >
+                {item.content || ''}
+              </ListItem>
             ))}
           </List>
         </BlockSlot>
       )
     case 'cbNavigation':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Navigation>
             <div className="flex flex-wrap gap-3">
               {(block.links || []).map((link, i) => (
                 <NavigationLink
                   key={link._key || `${key}-${i}`}
+                  data-sanity={
+                    isDraftMode
+                      ? dataAttr({
+                          id: pageId,
+                          type: pageType,
+                          path: toArrayItemPath(`${blockPath}.links`, link._key, i),
+                        }).toString()
+                      : undefined
+                  }
                   href={resolveLinkHref(link.link, link.url) || '#'}
-                  target={isExternalLink(link.link) && link.link?.openInNewTab ? '_blank' : undefined}
-                  rel={isExternalLink(link.link) && link.link?.openInNewTab ? 'noopener noreferrer' : undefined}
+                  target={
+                    isExternalLink(link.link) && link.link?.openInNewTab ? '_blank' : undefined
+                  }
+                  rel={
+                    isExternalLink(link.link) && link.link?.openInNewTab
+                      ? 'noopener noreferrer'
+                      : undefined
+                  }
                 >
                   {link.label || 'Link'}
                 </NavigationLink>
@@ -283,23 +474,60 @@ export default function BlockRenderer({block, index, pageType, pageId}: BlockRen
       )
     case 'cbGroup':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
-          <Group className="flex flex-wrap items-start gap-4">{renderGroupContent(block, pageId, pageType)}</Group>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
+          <Group className="flex flex-wrap items-start gap-4">
+            {renderGroupContent(block, pageId, pageType, blockPath, isDraftMode)}
+          </Group>
         </BlockSlot>
       )
     case 'cbColumn':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
-          <Column className="space-y-4">{renderColumnContent(block, pageId, pageType)}</Column>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
+          <Column className="space-y-4">
+            {renderColumnContent(block, pageId, pageType, blockPath, isDraftMode)}
+          </Column>
         </BlockSlot>
       )
     case 'cbColumns':
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Columns>
             {(block.columns || []).map((column, i) => (
-              <Column key={column._key || `${key}-${i}`} className="col-span-12 md:col-span-6 space-y-4">
-                {renderColumnContent(column, pageId, pageType)}
+              <Column
+                key={column._key || `${key}-${i}`}
+                className="col-span-12 md:col-span-6 space-y-4"
+                data-sanity={
+                  isDraftMode
+                    ? dataAttr({
+                        id: pageId,
+                        type: pageType,
+                        path: toArrayItemPath(`${blockPath}.columns`, column._key, i),
+                      }).toString()
+                    : undefined
+                }
+              >
+                {renderColumnContent(
+                  column,
+                  pageId,
+                  pageType,
+                  toArrayItemPath(`${blockPath}.columns`, column._key, i),
+                  isDraftMode,
+                )}
               </Column>
             ))}
           </Columns>
@@ -308,7 +536,12 @@ export default function BlockRenderer({block, index, pageType, pageId}: BlockRen
     case 'cbCover': {
       const coverMedia = resolveMediaUrls(block.backgroundMedia)
       return (
-        <BlockSlot refId={key} data-page-id={pageId} data-page-type={pageType}>
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
           <Cover
             backgroundMedia={
               coverMedia.videoUrl
@@ -320,15 +553,33 @@ export default function BlockRenderer({block, index, pageType, pageId}: BlockRen
             imageUrl={block.url || undefined}
             contentClassName="space-y-4 text-white"
           >
-            {renderCoverContent(block, pageId, pageType)}
+            {renderCoverContent(block, pageId, pageType, blockPath, isDraftMode)}
           </Cover>
         </BlockSlot>
       )
     }
     case 'callToAction':
-      return <CTA block={block as never} index={index} pageId={pageId} pageType={pageType} />
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
+          <CTA block={block as never} index={index} pageId={pageId} pageType={pageType} />
+        </BlockSlot>
+      )
     case 'infoSection':
-      return <InfoSection block={block as never} index={index} pageId={pageId} pageType={pageType} />
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+        >
+          <InfoSection block={block as never} index={index} pageId={pageId} pageType={pageType} />
+        </BlockSlot>
+      )
     default:
       return null
   }

@@ -1,7 +1,7 @@
 'use client'
 
 import {SanityDocument} from 'next-sanity'
-import {useOptimistic} from 'next-sanity/hooks'
+import {useDraftModeEnvironment, useOptimistic} from 'next-sanity/hooks'
 
 import BlockRenderer from '@/app/components/BlockRenderer'
 import {dataAttr} from '@/sanity/lib/utils'
@@ -11,6 +11,13 @@ type PageBuilderPageProps = {
   page: PageDocumentForBuilder
 }
 
+function toArrayItemPath(arrayPath: string, key: string | undefined, index: number): string {
+  if (key) {
+    return `${arrayPath}[_key=="${key}"]`
+  }
+  return `${arrayPath}[${index}]`
+}
+
 /**
  * The PageBuilder component is used to render the blocks from the `pageBuilder` field in the Page type in your Sanity Studio.
  */
@@ -18,35 +25,43 @@ type PageBuilderPageProps = {
 function RenderSections({
   pageBuilderSections,
   page,
+  isDraftMode,
 }: {
   pageBuilderSections: PageBuilderSection[]
   page: PageDocumentForBuilder
+  isDraftMode: boolean
 }) {
   if (!page) {
     return null
   }
   return (
     <div
-      data-sanity={dataAttr({
-        id: page._id,
-        type: page._type,
-        path: `pageBuilder`,
-      }).toString()}
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: page._id,
+              type: page._type,
+              path: `pageBuilder`,
+            }).toString()
+          : undefined
+      }
     >
       {pageBuilderSections.map((block: PageBuilderSection, index: number) => (
         <BlockRenderer
-          key={block._key}
+          key={block._key || `page-builder-${index}`}
           index={index}
           block={block}
           pageId={page._id}
           pageType={page._type}
+          blockPath={toArrayItemPath('pageBuilder', block._key, index)}
+          isDraftMode={isDraftMode}
         />
       ))}
     </div>
   )
 }
 
-function RenderEmptyState({page}: {page: PageDocumentForBuilder}) {
+function RenderEmptyState({page, isDraftMode}: {page: PageDocumentForBuilder; isDraftMode: boolean}) {
   if (!page) {
     return null
   }
@@ -54,11 +69,15 @@ function RenderEmptyState({page}: {page: PageDocumentForBuilder}) {
   return (
     <div
       className="container mt-10"
-      data-sanity={dataAttr({
-        id: page._id,
-        type: 'page',
-        path: `pageBuilder`,
-      }).toString()}
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: page._id,
+              type: 'page',
+              path: `pageBuilder`,
+            }).toString()
+          : undefined
+      }
     >
       <div className="prose">
         <h2 className="">This page has no content!</h2>
@@ -87,21 +106,25 @@ export default function PageBuilder({page}: PageBuilderPageProps) {
       return currentSections
     }
 
-    // If there are sections in the updated document, use them
+    // If there are sections in the updated document, trust Sanity's patch result directly.
+    // Custom reconciliation can accidentally block cross-container drag-and-drop moves.
     if (action.document?.pageBuilder) {
-      // Reconcile References. https://www.sanity.io/docs/enabling-drag-and-drop#ffe728eea8c1
-      return action.document.pageBuilder.map(
-        (section) => currentSections?.find((s) => s._key === section?._key) || section,
-      )
+      return action.document.pageBuilder as PageBuilderSection[]
     }
 
     // Otherwise keep the current sections
     return currentSections
   })
 
+  const draftModeEnvironment = useDraftModeEnvironment()
+  const isDraftMode =
+    draftModeEnvironment === 'live' ||
+    draftModeEnvironment === 'presentation-iframe' ||
+    draftModeEnvironment === 'presentation-window'
+
   return pageBuilderSections && pageBuilderSections.length > 0 ? (
-    <RenderSections pageBuilderSections={pageBuilderSections} page={page} />
+    <RenderSections pageBuilderSections={pageBuilderSections} page={page} isDraftMode={isDraftMode} />
   ) : (
-    <RenderEmptyState page={page} />
+    <RenderEmptyState page={page} isDraftMode={isDraftMode} />
   )
 }

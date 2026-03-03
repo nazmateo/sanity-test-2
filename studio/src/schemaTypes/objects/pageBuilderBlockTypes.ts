@@ -1,21 +1,23 @@
+import {defineArrayMember} from 'sanity'
+
 type BlockType = {type: string}
 
 export const pageBuilderAtomBlockTypes: BlockType[] = [
-  {type: 'cbButton'},
-  {type: 'cbHeading'},
-  {type: 'cbParagraph'},
-  {type: 'cbWysiwyg'},
-  {type: 'cbHtml'},
-  {type: 'cbImage'},
+  defineArrayMember({type: 'cbButton'}),
+  defineArrayMember({type: 'cbHeading'}),
+  defineArrayMember({type: 'cbParagraph'}),
+  defineArrayMember({type: 'cbWysiwyg'}),
+  defineArrayMember({type: 'cbHtml'}),
+  defineArrayMember({type: 'cbImage'}),
 ]
 
 export const pageBuilderContainerBlockTypes: BlockType[] = [
-  {type: 'cbButtons'},
-  {type: 'cbColumns'},
-  {type: 'cbGroup'},
-  {type: 'cbList'},
-  {type: 'cbNavigation'},
-  {type: 'cbCover'},
+  defineArrayMember({type: 'cbButtons'}),
+  defineArrayMember({type: 'cbColumns'}),
+  defineArrayMember({type: 'cbGroup'}),
+  defineArrayMember({type: 'cbList'}),
+  defineArrayMember({type: 'cbNavigation'}),
+  defineArrayMember({type: 'cbCover'}),
 ]
 
 export const pageBuilderComposableBlockTypes: BlockType[] = [
