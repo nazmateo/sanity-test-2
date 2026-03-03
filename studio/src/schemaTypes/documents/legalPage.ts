@@ -128,7 +128,16 @@ export const legalPage = defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'slug',
+      slug: 'slug',
+      language: 'language',
+    },
+    prepare({title, slug, language}) {
+      const languageLabel = (language || 'en').toUpperCase()
+      const path = slug ? `/${slug}` : '(no slug)'
+      return {
+        title: title || 'Untitled legal page',
+        subtitle: `[${languageLabel}] ${path}`,
+      }
     },
   },
 })

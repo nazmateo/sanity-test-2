@@ -44,10 +44,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const p of allPostsAndPages) {
       const languagePrefix = p.language && p.language !== 'en' ? `/${p.language}` : ''
       switch (p._type) {
+        case 'homePage':
+          priority = 1
+          changeFrequency = 'monthly'
+          url = languagePrefix ? `${domain}${languagePrefix}` : domain
+          break
         case 'page':
           priority = 0.8
           changeFrequency = 'monthly'
-          url = p.slug === 'home' ? `${domain}${languagePrefix}` : `${domain}${languagePrefix}/${p.slug}`
+          url = `${domain}${languagePrefix}/${p.slug}`
           break
         case 'legalPage':
           priority = 0.3

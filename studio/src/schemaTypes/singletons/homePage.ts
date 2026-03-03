@@ -1,15 +1,11 @@
-import {defineField, defineType} from 'sanity'
 import {DocumentIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
+
 import {pageBuilderContainerBlockTypes} from '../objects/pageBuilderBlockTypes'
 
-/**
- * Page schema.  Define and edit the fields for the 'page' content type.
- * Learn more: https://www.sanity.io/docs/studio/schema-types
- */
-
-export const page = defineType({
-  name: 'page',
-  title: 'Page',
+export const homePage = defineType({
+  name: 'homePage',
+  title: 'Home Page',
   type: 'document',
   icon: DocumentIcon,
   groups: [
@@ -23,52 +19,8 @@ export const page = defineType({
       title: 'Name',
       type: 'string',
       group: 'general',
+      initialValue: 'Home',
       validation: (Rule) => Rule.required(),
-    }),
-
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      group: 'general',
-      description: 'Editable on default language only. Translations inherit the same slug.',
-      readOnly: ({document}) => {
-        const language = (document as {language?: string} | undefined)?.language || 'en'
-        return language !== 'en'
-      },
-      validation: (Rule) =>
-        Rule.required().custom((value) => {
-          if (value?.current === 'home') {
-            return 'Slug "home" is reserved for the Home Page singleton.'
-          }
-          return true
-        }),
-      options: {
-        source: 'name',
-        maxLength: 96,
-        isUnique: async (slug, context) => {
-          const document = context.document as {_id?: string; language?: string}
-          const client = context.getClient({apiVersion: '2025-09-25'})
-          const id = document?._id?.replace(/^drafts\./, '')
-          const params = {
-            draft: `drafts.${id}`,
-            published: id,
-            slug,
-            language: document?.language || 'en',
-          }
-
-          const query = `
-            !defined(*[
-              !(_id in [$draft, $published]) &&
-              _type == "page" &&
-              slug.current == $slug &&
-              coalesce(language, "en") == $language
-            ][0]._id)
-          `
-
-          return client.fetch(query, params)
-        },
-      },
     }),
     defineField({
       name: 'language',
@@ -88,12 +40,10 @@ export const page = defineType({
       of: pageBuilderContainerBlockTypes,
       options: {
         insertMenu: {
-          // Configure the "Add Item" menu to display a thumbnail preview of the content type. https://www.sanity.io/docs/studio/array-type#efb1fe03459d
           views: [
             {
               name: 'grid',
-              previewImageUrl: (schemaTypeName) =>
-                `/static/page-builder-thumbnails/${schemaTypeName}.webp`,
+              previewImageUrl: (schemaTypeName) => `/static/page-builder-thumbnails/${schemaTypeName}.webp`,
             },
           ],
         },
@@ -116,8 +66,7 @@ export const page = defineType({
           title: 'Meta description',
           type: 'text',
           rows: 3,
-          validation: (Rule) =>
-            Rule.max(160).warning('Keep meta description under 160 characters.'),
+          validation: (Rule) => Rule.max(160).warning('Keep meta description under 160 characters.'),
         }),
         defineField({
           name: 'canonicalUrl',
@@ -179,16 +128,13 @@ export const page = defineType({
   ],
   preview: {
     select: {
-      title: 'name',
-      slug: 'slug.current',
       language: 'language',
     },
-    prepare({title, slug, language}) {
+    prepare({language}) {
       const languageLabel = (language || 'en').toUpperCase()
-      const path = slug ? `/${slug}` : '(no slug)'
       return {
-        title: title || 'Untitled page',
-        subtitle: `[${languageLabel}] ${path}`,
+        title: 'Home Page',
+        subtitle: `[${languageLabel}] /`,
       }
     },
   },

@@ -33,6 +33,19 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
                   .params({defaultLanguage: DEFAULT_LANGUAGE}),
               )
           }
+          if (listItem.getId() === 'homePage') {
+            return S.listItem()
+              .id('homePage')
+              .title('Home Page')
+              .schemaType('homePage')
+              .child(
+                S.documentList()
+                  .title('Home Page')
+                  .schemaType('homePage')
+                  .filter('_type == "homePage" && coalesce(language, "en") == $defaultLanguage')
+                  .params({defaultLanguage: DEFAULT_LANGUAGE}),
+              )
+          }
 
           return listItem
         })

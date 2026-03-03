@@ -160,8 +160,79 @@ export const getPageQuery = defineQuery(`
   }
 `)
 
+export const homePageQuery = defineQuery(`
+  *[
+    _type == "homePage" &&
+    coalesce(language, "en") == $language
+  ][0]{
+    _id,
+    _type,
+    name,
+    seo{
+      ...,
+      ogImage{
+        ...,
+        asset->
+      }
+    },
+    structuredData,
+    "pageBuilder": pageBuilder[]{
+      ...,
+      ${cbButtonWithLinkProjection},
+      ${cbButtonsWithLinksProjection},
+      ${cbNavigationWithLinksProjection},
+      _type == "cbGroup" => {
+        ...,
+        children[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${cbNavigationWithLinksProjection}
+        }
+      },
+      _type == "cbColumn" => {
+        ...,
+        children[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${cbNavigationWithLinksProjection}
+        }
+      },
+      _type == "cbCover" => {
+        ...,
+        content[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${cbNavigationWithLinksProjection}
+        }
+      },
+      _type == "cbColumns" => {
+        ...,
+        columns[]{
+          ...,
+          children[]{
+            ...,
+            ${cbButtonWithLinkProjection},
+            ${cbButtonsWithLinksProjection},
+            ${cbNavigationWithLinksProjection}
+          }
+        }
+      }
+    }
+  }
+`)
+
+export const homePageLanguagesQuery = defineQuery(`
+  *[_type == "homePage"]{
+    "language": coalesce(language, "en")
+  }
+`)
+
 export const sitemapData = defineQuery(`
   *[
+    (_type == "homePage") ||
     (_type == "page" && defined(slug.current)) ||
     (_type == "legalPage" && defined(slug))
   ] | order(_type asc) {
@@ -227,7 +298,6 @@ export const pagesSlugs = defineQuery(`
   *[
     _type == "page" &&
     defined(slug.current) &&
-    slug.current != "home" &&
     coalesce(language, "en") == $language
   ]
   {"slug": slug.current}
@@ -237,7 +307,6 @@ export const localizedPagesSlugs = defineQuery(`
   *[
     _type == "page" &&
     defined(slug.current) &&
-    slug.current != "home" &&
     coalesce(language, "en") != $defaultLanguage
   ]{
     "slug": slug.current,

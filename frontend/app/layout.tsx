@@ -2,7 +2,7 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Inter, IBM_Plex_Mono} from 'next/font/google'
+import {Inter, IBM_Plex_Mono, Noto_Sans_Arabic} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import Script from 'next/script'
 import {toPlainText} from 'next-sanity'
@@ -12,6 +12,7 @@ import {Toaster} from 'sonner'
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header, {type LayoutSettings} from '@/app/components/Header'
+import LocaleDocumentController from '@/app/components/LocaleDocumentController'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
@@ -88,6 +89,12 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+const notoSansArabic = Noto_Sans_Arabic({
+  variable: '--font-arabic',
+  subsets: ['arabic'],
+  display: 'swap',
+})
+
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const [{isEnabled: isDraftMode}, {data: settings}] = await Promise.all([
     draftMode(),
@@ -107,8 +114,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const cookiePolicyScript = normalizeInlineScript(layoutSettings?.cookiePolicyScript)
 
   return (
-    <html lang={lang} className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
+    <html
+      lang={lang}
+      dir="ltr"
+      className={`${inter.variable} ${ibmPlexMono.variable} ${notoSansArabic.variable} bg-white text-black`}
+    >
       <body>
+        <LocaleDocumentController />
         {gtmScript ? <Script id="settings-gtm-script" strategy="afterInteractive">{gtmScript}</Script> : null}
         {gaScript ? <Script id="settings-ga-script" strategy="afterInteractive">{gaScript}</Script> : null}
         {cookiePolicyScript ? (

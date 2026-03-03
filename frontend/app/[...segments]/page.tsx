@@ -8,6 +8,8 @@ import {buildCatchAllStaticParams, resolveCatchAllRoute, routePath, type Sitemap
 import {buildSeoMetadata} from '@/app/lib/seo-metadata'
 import {sanityFetch} from '@/sanity/lib/live'
 import {
+  homePageLanguagesQuery,
+  homePageQuery,
   getPageQuery,
   legalPageBySlugQuery,
   legalPageLanguagesBySlugQuery,
@@ -77,6 +79,45 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
       : [previousImages]
     : []
   const fallbackCanonical = metadataBase ? `${metadataBase}${routePath(match)}` : undefined
+
+  if (match.kind === 'home') {
+    const [{data: page}, {data: languageRows}] = await Promise.all([
+      sanityFetch({
+        query: homePageQuery,
+        params: {language: match.language},
+        stega: false,
+      }),
+      sanityFetch({
+        query: homePageLanguagesQuery,
+        stega: false,
+      }),
+    ])
+
+    const pageWithSeo = page as PageWithSeo | null
+    if (!pageWithSeo?._id) {
+      return {}
+    }
+
+    const discoveredLanguages =
+      ((languageRows as Array<{language?: string}> | null) || []).map((row) => row.language || DEFAULT_LANGUAGE)
+    const ogImage = resolveOpenGraphImage((pageWithSeo?.seo?.ogImage as any) || undefined)
+    const title = pageWithSeo?.seo?.metaTitle || pageWithSeo?.name
+    const description = pageWithSeo?.seo?.metaDescription || pageWithSeo?.name
+
+    return buildSeoMetadata({
+      title,
+      description,
+      seo: pageWithSeo.seo,
+      previousImages: normalizedPreviousImages,
+      newImage: ogImage,
+      metadataBase,
+      fallbackCanonical,
+      alternatePath: '/',
+      discoveredLanguages,
+      xDefault: metadataBase,
+      ogType: 'website',
+    })
+  }
 
   if (match.kind === 'legal') {
     const [{data: page}, {data: languageRows}] = await Promise.all([
@@ -151,9 +192,9 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
     newImage: ogImage,
     metadataBase,
     fallbackCanonical,
-    alternatePath: match.kind === 'home' ? '/' : `/${match.slug}`,
+    alternatePath: `/${match.slug}`,
     discoveredLanguages,
-    xDefault: match.kind === 'home' ? metadataBase : metadataBase ? `${metadataBase}/${match.slug}` : undefined,
+    xDefault: metadataBase ? `${metadataBase}/${match.slug}` : undefined,
     ogType: 'website',
   })
 }
@@ -163,6 +204,41 @@ export default async function CatchAllPage(props: Props) {
   const match = resolveCatchAllRoute(params.segments)
   if (!match) {
     return notFound()
+  }
+
+  if (match.kind === 'home') {
+    const {data: page} = await sanityFetch({
+      query: homePageQuery,
+      params: {language: match.language},
+    })
+    const pageWithSeo = page as PageWithSeo | null
+    const customStructuredData = parseJsonObject(pageWithSeo?.structuredData)
+
+    if (!pageWithSeo?._id) {
+      return (
+        <div className="py-40">
+          <PageOnboarding />
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {customStructuredData ? (
+          <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}} />
+        ) : null}
+        <div className="my-12 lg:my-24">
+          <div className="container">
+            <div className="pb-6 border-b border-gray-100">
+              <div className="max-w-3xl">
+                <h1 className="text-4xl text-gray-900 sm:text-5xl lg:text-7xl">{pageWithSeo.name}</h1>
+              </div>
+            </div>
+          </div>
+          <PageBuilderPage page={page as any} />
+        </div>
+      </>
+    )
   }
 
   if (match.kind === 'legal') {

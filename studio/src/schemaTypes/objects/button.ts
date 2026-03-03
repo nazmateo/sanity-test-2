@@ -11,6 +11,7 @@ export default defineType({
       title: 'Action Type',
       type: 'string',
       initialValue: 'button',
+      validation: (Rule) => Rule.required(),
       options: {
         list: [
           {title: 'Button', value: 'button'},
@@ -24,6 +25,14 @@ export default defineType({
       title: 'Link',
       type: 'cbLink',
       hidden: ({parent}) => parent?.actionType !== 'link',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as {actionType?: string} | undefined
+          if (parent?.actionType === 'link' && !value) {
+            return 'Link is required when Action Type is Link'
+          }
+          return true
+        }),
     }),
   ],
 })

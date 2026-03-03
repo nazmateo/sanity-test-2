@@ -1,6 +1,7 @@
 import {page} from './documents/page'
 import {legalPage} from './documents/legalPage'
 import {settings} from './singletons/settings'
+import {homePage} from './singletons/homePage'
 import {blockContent} from './objects/blockContent'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import cbButton from './objects/button'
@@ -29,6 +30,7 @@ import cbWysiwyg from './objects/wysiwyg'
 export const schemaTypes = [
   // Singletons
   settings,
+  homePage,
   // Documents
   page,
   legalPage,

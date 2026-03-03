@@ -566,9 +566,63 @@ export type LegalPageReference = {
   [internalGroqTypeReferenceTo]?: 'legalPage'
 }
 
+export type HomePageReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'homePage'
+}
+
 export type InternationalizedArrayReferenceValue = {
   _type: 'internationalizedArrayReferenceValue'
-  value?: PageReference | LegalPageReference
+  value?: PageReference | LegalPageReference | HomePageReference
+}
+
+export type HomePage = {
+  _id: string
+  _type: 'homePage'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  language: string
+  pageBuilder?: Array<
+    | ({
+        _key: string
+      } & CbButtons)
+    | ({
+        _key: string
+      } & CbColumns)
+    | ({
+        _key: string
+      } & CbGroup)
+    | ({
+        _key: string
+      } & CbList)
+    | ({
+        _key: string
+      } & CbNavigation)
+    | ({
+        _key: string
+      } & CbCover)
+  >
+  seo?: {
+    metaTitle?: string
+    metaDescription?: string
+    canonicalUrl?: string
+    noIndex?: boolean
+    ogTitle?: string
+    ogDescription?: string
+    ogImage?: {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: 'image'
+    }
+  }
+  structuredData?: string
 }
 
 export type LegalPage = {
@@ -795,7 +849,9 @@ export type AllSanitySchemaTypes =
   | TranslationMetadata
   | InternationalizedArrayReference
   | LegalPageReference
+  | HomePageReference
   | InternationalizedArrayReferenceValue
+  | HomePage
   | LegalPage
   | Page
   | Slug

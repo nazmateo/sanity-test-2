@@ -36,6 +36,8 @@ const homeLocation = {
 function resolveHref(documentType?: string, slug?: string, language?: string): string | undefined {
   const basePath = !language || language === 'en' ? '' : `/${language}`
   switch (documentType) {
+    case 'homePage':
+      return basePath || '/'
     case 'post':
       return slug ? `${basePath}/posts/${slug}` : undefined
     case 'page':
@@ -70,7 +72,11 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "settings" && _id == "siteSettings"`,
+            filter: `_type == "homePage" && coalesce(language, "en") == "en"`,
+          },
+          {
+            route: '/:language',
+            filter: `_type == "homePage" && coalesce(language, "en") == $language`,
           },
           {
             route: '/:slug',
@@ -105,6 +111,19 @@ export default defineConfig({
         ]),
         // Locations Resolver API allows you to define where data is being used in your application. https://www.sanity.io/docs/visual-editing/presentation-resolver-api#8d8bca7bfcd7
         locations: {
+          homePage: defineLocations({
+            select: {
+              language: 'language',
+            },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: 'Home',
+                  href: resolveHref('homePage', undefined, doc?.language)!,
+                },
+              ],
+            }),
+          }),
           settings: defineLocations({
             locations: [homeLocation],
             message: 'This document is used on all pages',
@@ -164,9 +183,9 @@ export default defineConfig({
     documentInternationalization({
       supportedLanguages: [
         {id: 'en', title: 'English'},
-        {id: 'es', title: 'Spanish'},
+        {id: 'ae', title: 'UAE'},
       ],
-      schemaTypes: ['page', 'legalPage'],
+      schemaTypes: ['page', 'legalPage', 'homePage'],
       languageField: 'language',
       weakReferences: true,
       bulkPublish: true,
@@ -182,7 +201,7 @@ export default defineConfig({
   document: {
     // Hide base templates so editors use the language-aware creation options from i18n.
     newDocumentOptions: (prev) =>
-      prev.filter((templateItem) => !['page', 'legalPage'].includes(templateItem.templateId)),
+      prev.filter((templateItem) => !['page', 'legalPage', 'homePage'].includes(templateItem.templateId)),
   },
 
   // Schema configuration, imported from ./src/schemaTypes/index.ts

@@ -11,7 +11,7 @@ export type RouteMatch = {
 export type SitemapRow = {
   slug?: string
   language?: string
-  _type?: 'page' | 'legalPage'
+  _type?: 'homePage' | 'page' | 'legalPage'
 }
 
 const LEGAL_SLUGS = ['privacy-policy', 'terms-and-conditions'] as const
@@ -22,7 +22,7 @@ export function isLegalSlug(slug: string): slug is (typeof LEGAL_SLUGS)[number] 
 
 export function resolveCatchAllRoute(segments?: string[]): RouteMatch | null {
   if (!segments || segments.length === 0) {
-    return {kind: 'home', language: DEFAULT_LANGUAGE, slug: 'home'}
+    return null
   }
 
   if (segments.length === 1) {
@@ -64,19 +64,23 @@ export function routePath(match: RouteMatch): string {
 }
 
 export function buildCatchAllStaticParams(rows: SitemapRow[]): Array<{segments?: string[]}> {
-  const params = new Set<string>([''])
+  const params = new Set<string>()
 
   for (const row of rows) {
     const slug = row.slug
     const language = row.language || DEFAULT_LANGUAGE
-    if (!slug || !isSupportedLanguage(language)) {
+    if (!isSupportedLanguage(language)) {
       continue
     }
 
-    if (row._type === 'page' && slug === 'home') {
+    if (row._type === 'homePage') {
       if (language !== DEFAULT_LANGUAGE) {
         params.add(language)
       }
+      continue
+    }
+
+    if (!slug) {
       continue
     }
 
