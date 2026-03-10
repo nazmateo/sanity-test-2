@@ -2,7 +2,7 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Inter, IBM_Plex_Mono, Noto_Sans_Arabic} from 'next/font/google'
+import {IBM_Plex_Mono, Noto_Sans_Arabic, SUSE} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import Script from 'next/script'
 import {toPlainText} from 'next-sanity'
@@ -10,8 +10,7 @@ import {VisualEditing} from 'next-sanity/visual-editing'
 import {Toaster} from 'sonner'
 
 import DraftModeToast from '@/app/components/DraftModeToast'
-import Footer from '@/app/components/Footer'
-import Header, {type LayoutSettings} from '@/app/components/Header'
+import {type LayoutSettings} from '@/app/components/Header'
 import LocaleDocumentController from '@/app/components/LocaleDocumentController'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -76,8 +75,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-const inter = Inter({
-  variable: '--font-inter',
+const suse = SUSE({
+  variable: '--font-suse',
   subsets: ['latin'],
   display: 'swap',
 })
@@ -117,7 +116,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <html
       lang={lang}
       dir="ltr"
-      className={`${inter.variable} ${ibmPlexMono.variable} ${notoSansArabic.variable} bg-white text-black`}
+      className={`${suse.variable} ${ibmPlexMono.variable} ${notoSansArabic.variable} bg-white text-black`}
     >
       <body>
         <LocaleDocumentController />
@@ -140,9 +139,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
-          <Header settings={layoutSettings} />
           <main className="">{children}</main>
-          <Footer settings={layoutSettings} />
         </section>
         <SpeedInsights />
       </body>

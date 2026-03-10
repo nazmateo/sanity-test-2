@@ -1,23 +1,32 @@
 import type {Metadata, ResolvingMetadata} from 'next'
+import type {PortableTextBlock} from 'next-sanity'
 import {notFound} from 'next/navigation'
+import type {PageDocumentForBuilder} from '@/sanity/lib/types'
 
+import Footer, {type SiteFooter} from '@/app/components/Footer'
 import {PageOnboarding} from '@/app/components/Onboarding'
 import PageBuilderPage from '@/app/components/PageBuilder'
 import PortableText from '@/app/components/PortableText'
+import Header, {type LayoutSettings, type SiteHeader} from '@/app/components/Header'
 import {buildCatchAllStaticParams, resolveCatchAllRoute, routePath, type SitemapRow} from '@/app/lib/catch-all-route'
 import {buildSeoMetadata} from '@/app/lib/seo-metadata'
 import {sanityFetch} from '@/sanity/lib/live'
 import {
+  footerQuery,
   homePageLanguagesQuery,
   homePageQuery,
+  headerQuery,
   getPageQuery,
   legalPageBySlugQuery,
   legalPageLanguagesBySlugQuery,
   pageLanguagesBySlugQuery,
+  settingsQuery,
   sitemapData,
 } from '@/sanity/lib/queries'
 import {DEFAULT_LANGUAGE} from '@/sanity/lib/i18n'
 import {parseJsonObject, resolveOpenGraphImage} from '@/sanity/lib/utils'
+
+type OpenGraphImageValue = Parameters<typeof resolveOpenGraphImage>[0]
 
 type Props = {
   params: Promise<{segments?: string[]}>
@@ -26,6 +35,8 @@ type Props = {
 type PageWithSeo = {
   _id?: string
   name?: string
+  headerVariant?: 'positive' | 'negative' | null
+  footerVariant?: 'positive' | 'negative' | null
   pageBuilder?: unknown[]
   structuredData?: string | null
   seo?: {
@@ -42,7 +53,9 @@ type PageWithSeo = {
 type LegalPageData = {
   _id?: string
   title?: string
-  content?: any[]
+  headerVariant?: 'positive' | 'negative' | null
+  footerVariant?: 'positive' | 'negative' | null
+  content?: PortableTextBlock[]
   seo?: {
     metaDescription?: string | null
     canonicalUrl?: string | null
@@ -100,7 +113,7 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 
     const discoveredLanguages =
       ((languageRows as Array<{language?: string}> | null) || []).map((row) => row.language || DEFAULT_LANGUAGE)
-    const ogImage = resolveOpenGraphImage((pageWithSeo?.seo?.ogImage as any) || undefined)
+    const ogImage = resolveOpenGraphImage((pageWithSeo?.seo?.ogImage as OpenGraphImageValue) || undefined)
     const title = pageWithSeo?.seo?.metaTitle || pageWithSeo?.name
     const description = pageWithSeo?.seo?.metaDescription || pageWithSeo?.name
 
@@ -143,7 +156,7 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
       legalPage?.seo?.metaDescription || (match.slug === 'privacy-policy' ? 'Privacy policy' : 'Terms and conditions')
     const discoveredLanguages =
       ((languageRows as Array<{language?: string}> | null) || []).map((row) => row.language || DEFAULT_LANGUAGE)
-    const ogImage = resolveOpenGraphImage((legalPage?.seo?.ogImage as any) || undefined)
+    const ogImage = resolveOpenGraphImage((legalPage?.seo?.ogImage as OpenGraphImageValue) || undefined)
 
     return buildSeoMetadata({
       title,
@@ -180,7 +193,7 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 
   const discoveredLanguages =
     ((languageRows as Array<{language?: string}> | null) || []).map((row) => row.language || DEFAULT_LANGUAGE)
-  const ogImage = resolveOpenGraphImage((pageWithSeo?.seo?.ogImage as any) || undefined)
+  const ogImage = resolveOpenGraphImage((pageWithSeo?.seo?.ogImage as OpenGraphImageValue) || undefined)
   const title = pageWithSeo?.seo?.metaTitle || pageWithSeo?.name
   const description = pageWithSeo?.seo?.metaDescription || pageWithSeo?.name
 
@@ -207,23 +220,42 @@ export default async function CatchAllPage(props: Props) {
   }
 
   if (match.kind === 'home') {
-    const {data: page} = await sanityFetch({
-      query: homePageQuery,
-      params: {language: match.language},
-    })
+    const [{data: page}, {data: settings}, {data: header}, {data: footer}] = await Promise.all([
+      sanityFetch({
+        query: homePageQuery,
+        params: {language: match.language},
+      }),
+      sanityFetch({
+        query: settingsQuery,
+      }),
+      sanityFetch({
+        query: headerQuery,
+      }),
+      sanityFetch({
+        query: footerQuery,
+      }),
+    ])
     const pageWithSeo = page as PageWithSeo | null
+    const layoutSettings = settings as LayoutSettings | null
+    const siteHeader = header as SiteHeader
+    const siteFooter = footer as SiteFooter
     const customStructuredData = parseJsonObject(pageWithSeo?.structuredData)
 
     if (!pageWithSeo?._id) {
       return (
-        <div className="py-40">
-          <PageOnboarding />
-        </div>
+        <>
+          <Header settings={layoutSettings} header={siteHeader} />
+          <div className="py-40">
+            <PageOnboarding />
+          </div>
+          <Footer footer={siteFooter} settings={layoutSettings} />
+        </>
       )
     }
 
     return (
       <>
+        <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} />
         {customStructuredData ? (
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}} />
         ) : null}
@@ -235,45 +267,82 @@ export default async function CatchAllPage(props: Props) {
               </div>
             </div>
           </div>
-          <PageBuilderPage page={page as any} />
+          <PageBuilderPage page={page as PageDocumentForBuilder} />
         </div>
+        <Footer footer={siteFooter} variant={pageWithSeo.footerVariant} settings={layoutSettings} />
       </>
     )
   }
 
   if (match.kind === 'legal') {
-    const {data} = await sanityFetch({
-      query: legalPageBySlugQuery,
-      params: {slug: match.slug, language: match.language},
-    })
+    const [{data}, {data: settings}, {data: header}, {data: footer}] = await Promise.all([
+      sanityFetch({
+        query: legalPageBySlugQuery,
+        params: {slug: match.slug, language: match.language},
+      }),
+      sanityFetch({
+        query: settingsQuery,
+      }),
+      sanityFetch({
+        query: headerQuery,
+      }),
+      sanityFetch({
+        query: footerQuery,
+      }),
+    ])
     const page = data as LegalPageData | null
+    const layoutSettings = settings as LayoutSettings | null
+    const siteHeader = header as SiteHeader
+    const siteFooter = footer as SiteFooter
     if (!page?._id) {
       return notFound()
     }
 
     return (
-      <div className="container py-16 lg:py-24">
-        <article className="max-w-3xl prose prose-gray">
-          <h1>{page.title || (match.slug === 'privacy-policy' ? 'Privacy Policy' : 'Terms and Conditions')}</h1>
-          {page.content?.length ? <PortableText value={page.content as any} /> : null}
-        </article>
-      </div>
+      <>
+        <Header settings={layoutSettings} header={siteHeader} variant={page.headerVariant} />
+        <div className="container py-16 lg:py-24">
+          <article className="max-w-3xl prose prose-gray">
+            <h1>{page.title || (match.slug === 'privacy-policy' ? 'Privacy Policy' : 'Terms and Conditions')}</h1>
+            {page.content?.length ? <PortableText value={page.content} /> : null}
+          </article>
+        </div>
+        <Footer footer={siteFooter} variant={page.footerVariant} settings={layoutSettings} />
+      </>
     )
   }
 
-  const {data: page} = await sanityFetch({
-    query: getPageQuery,
-    params: {slug: match.slug, language: match.language},
-  })
+  const [{data: page}, {data: settings}, {data: header}, {data: footer}] = await Promise.all([
+    sanityFetch({
+      query: getPageQuery,
+      params: {slug: match.slug, language: match.language},
+    }),
+    sanityFetch({
+      query: settingsQuery,
+    }),
+    sanityFetch({
+      query: headerQuery,
+    }),
+    sanityFetch({
+      query: footerQuery,
+    }),
+  ])
   const pageWithSeo = page as PageWithSeo | null
+  const layoutSettings = settings as LayoutSettings | null
+  const siteHeader = header as SiteHeader
+  const siteFooter = footer as SiteFooter
   const customStructuredData = parseJsonObject(pageWithSeo?.structuredData)
 
   if (!pageWithSeo?._id) {
     if (match.kind === 'page' && match.language === DEFAULT_LANGUAGE) {
       return (
-        <div className="py-40">
-          <PageOnboarding />
-        </div>
+        <>
+          <Header settings={layoutSettings} header={siteHeader} />
+          <div className="py-40">
+            <PageOnboarding />
+          </div>
+          <Footer footer={siteFooter} settings={layoutSettings} />
+        </>
       )
     }
     return notFound()
@@ -281,6 +350,7 @@ export default async function CatchAllPage(props: Props) {
 
   return (
     <>
+      <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} />
       {customStructuredData ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}} />
       ) : null}
@@ -292,8 +362,9 @@ export default async function CatchAllPage(props: Props) {
             </div>
           </div>
         </div>
-        <PageBuilderPage page={page as any} />
+        <PageBuilderPage page={page as PageDocumentForBuilder} />
       </div>
+      <Footer footer={siteFooter} variant={pageWithSeo.footerVariant} settings={layoutSettings} />
     </>
   )
 }

@@ -8,7 +8,7 @@ import pluralize from 'pluralize-esm'
  * Learn more: https://www.sanity.io/docs/structure-builder-introduction
  */
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+const DISABLED_TYPES = ['header', 'footer', 'settings', 'assist.instruction.context']
 const DEFAULT_LANGUAGE = 'en'
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
@@ -16,7 +16,7 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
     .title('Website Content')
     .items([
       ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
+        // Remove singleton-only types from the main document type list.
         .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
         // Show only default-language page documents in the main Pages list.
         .map((listItem) => {
@@ -53,6 +53,14 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .map((listItem) => {
           return listItem.title(pluralize(listItem.getTitle() as string))
         }),
+      S.listItem()
+        .title('Site Header')
+        .child(S.document().schemaType('header').documentId('siteHeader'))
+        .icon(CogIcon),
+      S.listItem()
+        .title('Site Footer')
+        .child(S.document().schemaType('footer').documentId('siteFooter'))
+        .icon(CogIcon),
       // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
       S.listItem()
         .title('Site Settings')

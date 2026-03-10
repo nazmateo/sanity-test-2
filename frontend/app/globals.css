@@ -4,15 +4,15 @@
 
 @layer base {
   body {
-    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-suse), ui-sans-serif, system-ui, sans-serif;
   }
 
   html[dir='rtl'] body {
-    font-family: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-arabic), var(--font-suse), ui-sans-serif, system-ui, sans-serif;
   }
 
   html[dir='rtl'] .font-mono {
-    font-family: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-arabic), var(--font-suse), ui-sans-serif, system-ui, sans-serif;
     letter-spacing: normal;
   }
 
@@ -36,11 +36,104 @@
 @theme {
   --shadow-layer: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
 
+  /* Albatha Figma tokens */
+  --color-background: #f8f8f8;
+  --color-foreground: #151d28;
+  --color-surface: #ffffff;
+  --color-brand-blue: #0daee4;
+  --color-brand-orange: #f25e03;
+  --color-overlay-80: #000000cc;
+  --color-overlay-20: #00000033;
+
+  --font-sans: var(--font-suse), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-suse), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, 'SFMono-Regular', monospace;
+
+  --spacing-item-s: 1rem;
+  --stroke-1: 1px;
+  --breakpoint-design: 120rem;
+
+  --text-albatha-body: 1.625rem;
+  --text-albatha-body--line-height: 1.3;
+  --text-albatha-body--font-weight: 400;
+  --text-albatha-body--letter-spacing: 0;
+
+  --text-albatha-h1: 8.75rem;
+  --text-albatha-h1--line-height: 1;
+  --text-albatha-h1--font-weight: 400;
+  --text-albatha-h1--letter-spacing: 0;
+
+  --text-albatha-h2: 2.5rem;
+  --text-albatha-h2--line-height: 1.3;
+  --text-albatha-h2--font-weight: 400;
+  --text-albatha-h2--letter-spacing: 0;
+
+  --text-albatha-h3: 1.875rem;
+  --text-albatha-h3--line-height: 1.3;
+  --text-albatha-h3--font-weight: 400;
+  --text-albatha-h3--letter-spacing: 0;
+
+  --text-albatha-eyebrow: 1.25rem;
+  --text-albatha-eyebrow--line-height: 1.1;
+  --text-albatha-eyebrow--font-weight: 500;
+  --text-albatha-eyebrow--letter-spacing: 0.025rem;
+
+  --text-albatha-button: 1.375rem;
+  --text-albatha-button--line-height: 1.8181818182;
+  --text-albatha-button--font-weight: 500;
+  --text-albatha-button--letter-spacing: 0;
+
+  --text-albatha-nav: 1.25rem;
+  --text-albatha-nav--line-height: 1;
+  --text-albatha-nav--font-weight: 400;
+  --text-albatha-nav--letter-spacing: 0;
+
+  --text-albatha-dropdown-heading: 1.5rem;
+  --text-albatha-dropdown-heading--line-height: 1;
+  --text-albatha-dropdown-heading--font-weight: 400;
+  --text-albatha-dropdown-heading--letter-spacing: 0;
+
+  --text-albatha-language: 1rem;
+  --text-albatha-language--line-height: 1;
+  --text-albatha-language--font-weight: 400;
+  --text-albatha-language--letter-spacing: 0;
+
+  --text-albatha-footer-office-heading: 1.25rem;
+  --text-albatha-footer-office-heading--line-height: 1;
+  --text-albatha-footer-office-heading--font-weight: 500;
+  --text-albatha-footer-office-heading--letter-spacing: 0;
+
+  --text-albatha-footer-address: 1.125rem;
+  --text-albatha-footer-address--line-height: 1.4;
+  --text-albatha-footer-address--font-weight: 400;
+  --text-albatha-footer-address--letter-spacing: 0;
+
+  --text-albatha-footer-contact: 1.875rem;
+  --text-albatha-footer-contact--line-height: 1.4;
+  --text-albatha-footer-contact--font-weight: 400;
+  --text-albatha-footer-contact--letter-spacing: 0;
+
+  --text-albatha-footer-nav-heading: 1.5rem;
+  --text-albatha-footer-nav-heading--line-height: 1;
+  --text-albatha-footer-nav-heading--font-weight: 400;
+  --text-albatha-footer-nav-heading--letter-spacing: 0;
+
+  --text-albatha-footer-nav-link: 1.25rem;
+  --text-albatha-footer-nav-link--line-height: 1;
+  --text-albatha-footer-nav-link--font-weight: 400;
+  --text-albatha-footer-nav-link--letter-spacing: 0;
+
+  --text-albatha-footer-meta: 1.25rem;
+  --text-albatha-footer-meta--line-height: 1.75;
+  --text-albatha-footer-meta--font-weight: 400;
+  --text-albatha-footer-meta--letter-spacing: 0;
+
+  /* Compatibility aliases for existing starter classes */
   --color-framework: #000;
-  --color-black: #0b0b0b;
+  --color-black: #151d28;
   --color-white: #fff;
-  --color-brand: #f50;
-  --color-blue: #0052ff;
+  --color-brand: #f25e03;
+  --color-blue: #0daee4;
   --color-yellow: #cdea19;
   --color-gray-50: #f6f6f8;
   --color-gray-100: #eeeef1;
@@ -55,4 +148,206 @@
   --color-gray-950: #13141b;
 
   --default-transition-duration: 250ms;
+}
+
+@utility type-h1 {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-h1);
+  line-height: var(--text-albatha-h1--line-height);
+  font-weight: var(--text-albatha-h1--font-weight);
+  letter-spacing: var(--text-albatha-h1--letter-spacing);
+}
+
+@utility type-h2 {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-h2);
+  line-height: var(--text-albatha-h2--line-height);
+  font-weight: var(--text-albatha-h2--font-weight);
+  letter-spacing: var(--text-albatha-h2--letter-spacing);
+}
+
+@utility type-h3 {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-h3);
+  line-height: var(--text-albatha-h3--line-height);
+  font-weight: var(--text-albatha-h3--font-weight);
+  letter-spacing: var(--text-albatha-h3--letter-spacing);
+}
+
+@utility type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-body);
+  line-height: var(--text-albatha-body--line-height);
+  font-weight: var(--text-albatha-body--font-weight);
+  letter-spacing: var(--text-albatha-body--letter-spacing);
+}
+
+@utility type-eyebrow {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-eyebrow);
+  line-height: var(--text-albatha-eyebrow--line-height);
+  font-weight: var(--text-albatha-eyebrow--font-weight);
+  letter-spacing: var(--text-albatha-eyebrow--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility type-button-label {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-button);
+  line-height: var(--text-albatha-button--line-height);
+  font-weight: var(--text-albatha-button--font-weight);
+  letter-spacing: var(--text-albatha-button--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility type-nav {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-nav);
+  line-height: var(--text-albatha-nav--line-height);
+  font-weight: var(--text-albatha-nav--font-weight);
+  letter-spacing: var(--text-albatha-nav--letter-spacing);
+}
+
+@utility type-dropdown-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-dropdown-heading);
+  line-height: var(--text-albatha-dropdown-heading--line-height);
+  font-weight: var(--text-albatha-dropdown-heading--font-weight);
+  letter-spacing: var(--text-albatha-dropdown-heading--letter-spacing);
+}
+
+@utility type-language {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-language);
+  line-height: var(--text-albatha-language--line-height);
+  font-weight: var(--text-albatha-language--font-weight);
+  letter-spacing: var(--text-albatha-language--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility type-footer-office-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-footer-office-heading);
+  line-height: var(--text-albatha-footer-office-heading--line-height);
+  font-weight: var(--text-albatha-footer-office-heading--font-weight);
+  letter-spacing: var(--text-albatha-footer-office-heading--letter-spacing);
+}
+
+@utility type-footer-address {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-footer-address);
+  line-height: var(--text-albatha-footer-address--line-height);
+  font-weight: var(--text-albatha-footer-address--font-weight);
+  letter-spacing: var(--text-albatha-footer-address--letter-spacing);
+}
+
+@utility type-footer-contact {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-footer-contact);
+  line-height: var(--text-albatha-footer-contact--line-height);
+  font-weight: var(--text-albatha-footer-contact--font-weight);
+  letter-spacing: var(--text-albatha-footer-contact--letter-spacing);
+}
+
+@utility type-footer-nav-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-footer-nav-heading);
+  line-height: var(--text-albatha-footer-nav-heading--line-height);
+  font-weight: var(--text-albatha-footer-nav-heading--font-weight);
+  letter-spacing: var(--text-albatha-footer-nav-heading--letter-spacing);
+}
+
+@utility type-footer-nav-link {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-footer-nav-link);
+  line-height: var(--text-albatha-footer-nav-link--line-height);
+  font-weight: var(--text-albatha-footer-nav-link--font-weight);
+  letter-spacing: var(--text-albatha-footer-nav-link--letter-spacing);
+}
+
+@utility type-footer-meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-footer-meta);
+  line-height: var(--text-albatha-footer-meta--line-height);
+  font-weight: var(--text-albatha-footer-meta--font-weight);
+  letter-spacing: var(--text-albatha-footer-meta--letter-spacing);
+}
+
+@utility footer-content-width {
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+}
+
+@utility footer-main-layout {
+  display: grid;
+  row-gap: 3rem;
+  padding-top: 3.5rem;
+  padding-bottom: 2rem;
+}
+
+@utility footer-left-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@utility footer-address-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@utility footer-nav-layout {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@utility footer-nav-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@utility footer-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@utility footer-meta-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .footer-main-layout {
+    grid-template-columns: 32.1875rem minmax(0, 1fr);
+    column-gap: 13.3125rem;
+    align-items: start;
+    padding-top: 4.96875rem;
+    padding-bottom: 3.4375rem;
+  }
+
+  .footer-address-layout {
+    grid-template-columns: 15.500375rem 15.1813125rem;
+    column-gap: 1.5rem;
+    align-items: end;
+  }
+
+  .footer-nav-layout {
+    grid-template-columns: 15.4375rem 15.4375rem 15.875rem;
+    column-gap: 1.5rem;
+    align-items: end;
+  }
+
+  .footer-meta-layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding-top: 1.3125rem;
+    padding-bottom: 1.0625rem;
+  }
 }

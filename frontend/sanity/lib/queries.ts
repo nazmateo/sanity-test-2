@@ -12,45 +12,45 @@ const navigationLinksProjection = /* groq */ `
       ...,
       "internalPageSlug": internalPage->slug.current
     }
+  },
+  dropdownGroups[]{
+    ...,
+    links[]{
+      ...,
+      link{
+        ...,
+        "internalPageSlug": internalPage->slug.current
+      }
+    }
   }
 `
 
 export const settingsQuery = defineQuery(`
   *[_type == "settings"][0]{
     ...,
-    header{
+    menuGroups[]{
       ...,
-      ctaLink{
-        ...,
-        "internalPageSlug": internalPage->slug.current
-      },
-      primaryMenu{
-        ...,
-        links[]{
-          ${navigationLinksProjection}
-        }
-      },
-      secondaryMenu{
-        ...,
-        links[]{
-          ${navigationLinksProjection}
-        }
+      links[]{
+        ${navigationLinksProjection}
       }
+    }
+  }
+`)
+
+export const headerQuery = defineQuery(`
+  *[_type == "header"][0]{
+    ...,
+    ctaLink{
+      ...,
+      "internalPageSlug": internalPage->slug.current
     },
-    footer{
+    positiveLogo{
       ...,
-      menu{
-        ...,
-        links[]{
-          ${navigationLinksProjection}
-        }
-      },
-      legalMenu{
-        ...,
-        links[]{
-          ${navigationLinksProjection}
-        }
-      }
+      asset->
+    },
+    negativeLogo{
+      ...,
+      asset->
     },
     primaryMenu{
       ...,
@@ -63,8 +63,28 @@ export const settingsQuery = defineQuery(`
       links[]{
         ${navigationLinksProjection}
       }
+    }
+  }
+`)
+
+export const footerQuery = defineQuery(`
+  *[_type == "footer"][0]{
+    ...,
+    positiveLogo{
+      ...,
+      asset->
     },
-    menuGroups[]{
+    negativeLogo{
+      ...,
+      asset->
+    },
+    navigationGroups[]{
+      ...,
+      links[]{
+        ${navigationLinksProjection}
+      }
+    },
+    legalMenu{
       ...,
       links[]{
         ${navigationLinksProjection}
@@ -136,6 +156,8 @@ export const getPageQuery = defineQuery(`
     name,
     language,
     slug,
+    headerVariant,
+    footerVariant,
     seo{
       ...,
       ogImage{
@@ -205,6 +227,8 @@ export const homePageQuery = defineQuery(`
     _id,
     _type,
     name,
+    headerVariant,
+    footerVariant,
     seo{
       ...,
       ogImage{
@@ -295,6 +319,8 @@ export const legalPageBySlugQuery = defineQuery(`
     title,
     slug,
     language,
+    headerVariant,
+    footerVariant,
     content,
     seo{
       ...,

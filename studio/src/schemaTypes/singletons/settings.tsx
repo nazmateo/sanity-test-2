@@ -15,6 +15,7 @@ export const settings = defineType({
   icon: CogIcon,
   groups: [
     {name: 'general', title: 'General', default: true},
+    {name: 'contact', title: 'Contact'},
     {name: 'navigation', title: 'Navigation'},
     {name: 'seo', title: 'SEO'},
     {name: 'scripts', title: 'Scripts & Tracking'},
@@ -107,80 +108,31 @@ export const settings = defineType({
       ],
     }),
     defineField({
-      name: 'logo',
-      title: 'Logo',
-      type: 'image',
-      group: 'general',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative text',
-          type: 'string',
-          validation: (rule) => rule.required().warning('Logo alt text improves accessibility.'),
-        }),
-      ],
+      name: 'contactPhone',
+      title: 'Contact phone',
+      description: 'Primary phone number used across the site.',
+      type: 'string',
+      group: 'contact',
     }),
     defineField({
-      name: 'header',
-      title: 'Header',
-      description: 'Default global header configuration.',
-      type: 'headerSettings',
-      group: 'navigation',
-    }),
-    defineField({
-      name: 'footer',
-      title: 'Footer',
-      description: 'Default global footer configuration.',
-      type: 'footerSettings',
-      group: 'navigation',
-    }),
-    defineField({
-      name: 'primaryMenu',
-      title: 'Primary menu',
-      description: 'Legacy field. Prefer Header > Primary menu.',
-      type: 'menuGroup',
-      group: 'navigation',
-      initialValue: {
-        menuId: 'primary',
-        title: 'Primary',
-      },
+      name: 'contactEmail',
+      title: 'Contact email',
+      description: 'Primary email address used across the site.',
+      type: 'string',
+      group: 'contact',
       validation: (rule) =>
-        rule.required().custom((value) => {
-          const menu = value as {menuId?: string} | undefined
-          if (!menu) return true
-          if (menu.menuId !== 'primary') {
-            return 'Primary menu must use menuId "primary".'
+        rule.custom((value) => {
+          if (!value) {
+            return true
           }
-          return true
-        }),
-    }),
-    defineField({
-      name: 'secondaryMenu',
-      title: 'Secondary menu',
-      description: 'Legacy field. Prefer Header > Secondary menu.',
-      type: 'menuGroup',
-      group: 'navigation',
-      initialValue: {
-        menuId: 'secondary',
-        title: 'Secondary',
-      },
-      validation: (rule) =>
-        rule.required().custom((value) => {
-          const menu = value as {menuId?: string} | undefined
-          if (!menu) return true
-          if (menu.menuId !== 'secondary') {
-            return 'Secondary menu must use menuId "secondary".'
-          }
-          return true
+
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Enter a valid email address.'
         }),
     }),
     defineField({
       name: 'menuGroups',
       title: 'Additional menu groups',
-      description: 'Legacy field. Create extra menu groups (e.g. footer, sidebar, mobile).',
+      description: 'Create extra menu groups (e.g. footer, sidebar, mobile).',
       type: 'array',
       group: 'navigation',
       of: [defineArrayMember({type: 'menuGroup'})],
@@ -197,11 +149,6 @@ export const settings = defineType({
           if (duplicates.length > 0) {
             return `Duplicate menu IDs found: ${Array.from(new Set(duplicates)).join(', ')}`
           }
-
-          if (menuIds.includes('primary') || menuIds.includes('secondary')) {
-            return 'Use reserved IDs "primary" and "secondary" only in Primary menu / Secondary menu fields.'
-          }
-
           return true
         }),
     }),

@@ -1,5 +1,7 @@
 import {page} from './documents/page'
 import {legalPage} from './documents/legalPage'
+import {header} from './singletons/header'
+import {footer} from './singletons/footer'
 import {settings} from './singletons/settings'
 import {homePage} from './singletons/homePage'
 import {blockContent} from './objects/blockContent'
@@ -19,18 +21,20 @@ import cbList from './objects/list'
 import cbMedia from './objects/media'
 import {menuGroup} from './objects/menuGroup'
 import {menuLink} from './objects/menuLink'
+import {menuDropdownGroup} from './objects/menuDropdownGroup'
 import {menuSubLink} from './objects/menuSubLink'
 import cbNavigationLink from './objects/navigation-link'
 import cbNavigation from './objects/navigation'
 import cbParagraph from './objects/paragraph'
 import cbWysiwyg from './objects/wysiwyg'
-import {headerSettings} from './objects/headerSettings'
 import {footerSettings} from './objects/footerSettings'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/studio/schema-types
 
 export const schemaTypes = [
   // Singletons
+  header,
+  footer,
   settings,
   homePage,
   // Documents
@@ -52,12 +56,12 @@ export const schemaTypes = [
   cbMedia,
   menuGroup,
   menuLink,
+  menuDropdownGroup,
   menuSubLink,
   cbNavigationLink,
   cbNavigation,
   cbParagraph,
   cbWysiwyg,
-  headerSettings,
   footerSettings,
   blockContent,
   blockContentTextOnly,

@@ -31,6 +31,13 @@ export const menuLink = defineType({
       type: 'array',
       of: [defineArrayMember({type: 'menuSubLink'})],
     }),
+    defineField({
+      name: 'dropdownGroups',
+      title: 'Dropdown groups',
+      description: 'Optional grouped dropdown columns for richer header menus.',
+      type: 'array',
+      of: [defineArrayMember({type: 'menuDropdownGroup'})],
+    }),
   ],
   preview: {
     select: {
