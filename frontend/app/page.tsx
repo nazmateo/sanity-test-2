@@ -112,8 +112,8 @@ export default async function HomePage() {
   if (!pageWithSeo?._id) {
     return (
       <>
-        <Header settings={layoutSettings} header={siteHeader} />
-        <div className="py-40">
+        <Header settings={layoutSettings} header={siteHeader} overlay />
+        <div className="py-40 pt-32">
           <PageOnboarding />
         </div>
         <Footer footer={siteFooter} settings={layoutSettings} />
@@ -123,23 +123,14 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} />
+      <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} overlay />
       {customStructuredData ? (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}}
         />
       ) : null}
-      <div className="my-12 lg:my-24">
-        <div className="container">
-          <div className="pb-6 border-b border-gray-100">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl text-gray-900 sm:text-5xl lg:text-7xl">{pageWithSeo.name}</h1>
-            </div>
-          </div>
-        </div>
-        <PageBuilderPage page={page as PageDocumentForBuilder} />
-      </div>
+      <PageBuilderPage page={page as PageDocumentForBuilder} />
       <Footer footer={siteFooter} variant={pageWithSeo.footerVariant} settings={layoutSettings} />
     </>
   )

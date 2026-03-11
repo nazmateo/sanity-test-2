@@ -145,6 +145,32 @@ const cbWysiwygWithResolvedLinksProjection = /* groq */ `
   }
 `
 
+const heroSectionProjection = /* groq */ `
+  _type == "heroSection" => {
+    ...,
+    cta{
+      ...,
+      link{
+        ...,
+        "internalPageSlug": internalPage->slug.current
+      }
+    },
+    content{
+      ...,
+      columns[]{
+        ...,
+        children[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${cbNavigationWithLinksProjection},
+          ${cbWysiwygWithResolvedLinksProjection}
+        }
+      }
+    }
+  }
+`
+
 export const getPageQuery = defineQuery(`
   *[
     _type == 'page' &&
@@ -171,6 +197,7 @@ export const getPageQuery = defineQuery(`
       ${cbButtonWithLinkProjection},
       ${cbButtonsWithLinksProjection},
       ${cbNavigationWithLinksProjection},
+      ${heroSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
         ...,
@@ -179,6 +206,7 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -189,6 +217,7 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -199,6 +228,7 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -211,6 +241,7 @@ export const getPageQuery = defineQuery(`
             ${cbButtonWithLinkProjection},
             ${cbButtonsWithLinksProjection},
             ${cbNavigationWithLinksProjection},
+            ${heroSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
         }
@@ -242,6 +273,7 @@ export const homePageQuery = defineQuery(`
       ${cbButtonWithLinkProjection},
       ${cbButtonsWithLinksProjection},
       ${cbNavigationWithLinksProjection},
+      ${heroSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
         ...,
@@ -250,6 +282,7 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -260,6 +293,7 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -270,6 +304,7 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${cbNavigationWithLinksProjection},
+          ${heroSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -282,6 +317,7 @@ export const homePageQuery = defineQuery(`
             ${cbButtonWithLinkProjection},
             ${cbButtonsWithLinksProjection},
             ${cbNavigationWithLinksProjection},
+            ${heroSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
         }

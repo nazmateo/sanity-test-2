@@ -19,6 +19,8 @@ import cbLink from './objects/link'
 import cbListItem from './objects/list-item'
 import cbList from './objects/list'
 import cbMedia from './objects/media'
+import {heroPhrase} from './objects/heroPhrase'
+import {heroSection} from './objects/heroSection'
 import {menuGroup} from './objects/menuGroup'
 import {menuLink} from './objects/menuLink'
 import {menuDropdownGroup} from './objects/menuDropdownGroup'
@@ -54,6 +56,8 @@ export const schemaTypes = [
   cbListItem,
   cbList,
   cbMedia,
+  heroPhrase,
+  heroSection,
   menuGroup,
   menuLink,
   menuDropdownGroup,

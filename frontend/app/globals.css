@@ -128,6 +128,36 @@
   --text-albatha-footer-meta--font-weight: 400;
   --text-albatha-footer-meta--letter-spacing: 0;
 
+  --text-albatha-hero-phrase: 1.25rem;
+  --text-albatha-hero-phrase--line-height: 1.1;
+  --text-albatha-hero-phrase--font-weight: 500;
+  --text-albatha-hero-phrase--letter-spacing: 0.025rem;
+
+  --text-albatha-hero-cta: 1.25rem;
+  --text-albatha-hero-cta--line-height: 1;
+  --text-albatha-hero-cta--font-weight: 400;
+  --text-albatha-hero-cta--letter-spacing: 0;
+
+  --text-albatha-hero-heading-mobile: 4rem;
+  --text-albatha-hero-heading-mobile--line-height: 0.96;
+  --text-albatha-hero-heading-mobile--font-weight: 400;
+  --text-albatha-hero-heading-mobile--letter-spacing: 0;
+
+  --text-albatha-hero-heading-desktop: 8.75rem;
+  --text-albatha-hero-heading-desktop--line-height: 1;
+  --text-albatha-hero-heading-desktop--font-weight: 400;
+  --text-albatha-hero-heading-desktop--letter-spacing: 0;
+
+  --text-albatha-hero-body-mobile: 1.5rem;
+  --text-albatha-hero-body-mobile--line-height: 1.3;
+  --text-albatha-hero-body-mobile--font-weight: 400;
+  --text-albatha-hero-body-mobile--letter-spacing: 0;
+
+  --text-albatha-hero-body-desktop: 1.875rem;
+  --text-albatha-hero-body-desktop--line-height: 1.3;
+  --text-albatha-hero-body-desktop--font-weight: 400;
+  --text-albatha-hero-body-desktop--letter-spacing: 0;
+
   /* Compatibility aliases for existing starter classes */
   --color-framework: #000;
   --color-black: #151d28;
@@ -273,6 +303,39 @@
   letter-spacing: var(--text-albatha-footer-meta--letter-spacing);
 }
 
+@utility type-hero-phrase {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-hero-phrase);
+  line-height: var(--text-albatha-hero-phrase--line-height);
+  font-weight: var(--text-albatha-hero-phrase--font-weight);
+  letter-spacing: var(--text-albatha-hero-phrase--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility type-hero-cta {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-hero-cta);
+  line-height: var(--text-albatha-hero-cta--line-height);
+  font-weight: var(--text-albatha-hero-cta--font-weight);
+  letter-spacing: var(--text-albatha-hero-cta--letter-spacing);
+}
+
+@utility type-hero-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-albatha-hero-heading-mobile);
+  line-height: var(--text-albatha-hero-heading-mobile--line-height);
+  font-weight: var(--text-albatha-hero-heading-mobile--font-weight);
+  letter-spacing: var(--text-albatha-hero-heading-mobile--letter-spacing);
+}
+
+@utility type-hero-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-hero-body-mobile);
+  line-height: var(--text-albatha-hero-body-mobile--line-height);
+  font-weight: var(--text-albatha-hero-body-mobile--font-weight);
+  letter-spacing: var(--text-albatha-hero-body-mobile--letter-spacing);
+}
+
 @utility footer-content-width {
   width: 100%;
   max-width: 100rem;
@@ -349,5 +412,174 @@
     gap: 2.5rem;
     padding-top: 1.3125rem;
     padding-bottom: 1.0625rem;
+  }
+}
+
+@utility hero-content-width {
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+}
+
+@utility hero-section-shell {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+@utility hero-media-layer {
+  position: absolute;
+  inset: 0;
+}
+
+@utility hero-overlay-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.2) 25%,
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+@utility hero-content-layout {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2.25rem;
+  padding-top: 7rem;
+  padding-bottom: 3rem;
+}
+
+@utility hero-columns-layout {
+  display: grid;
+  gap: 1.75rem;
+}
+
+@utility hero-phrases-layer {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+@utility hero-phrase-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.9375rem 1rem;
+  color: var(--color-white);
+}
+
+@utility hero-left-column {
+  max-width: 44rem;
+}
+
+@utility hero-right-column {
+  max-width: 32.3125rem;
+}
+
+@utility hero-copy-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+@utility hero-phrase-shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+@utility hero-phrase-animate {
+  opacity: 0;
+  animation-name: heroPhraseReveal;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+@utility hero-phrase-delay-1 {
+  animation-delay: 0s;
+}
+
+@utility hero-phrase-delay-2 {
+  animation-delay: 0.5s;
+}
+
+@utility hero-phrase-delay-3 {
+  animation-delay: 1s;
+}
+
+@utility hero-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  min-width: 9.0625rem;
+  border-radius: 0.5rem;
+  background: rgba(248, 248, 248, 0.2);
+  padding: 0.625rem;
+  color: var(--color-white);
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+
+@keyframes heroPhraseReveal {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .type-hero-heading {
+    font-size: var(--text-albatha-hero-heading-desktop);
+    line-height: var(--text-albatha-hero-heading-desktop--line-height);
+    font-weight: var(--text-albatha-hero-heading-desktop--font-weight);
+    letter-spacing: var(--text-albatha-hero-heading-desktop--letter-spacing);
+  }
+
+  .type-hero-body {
+    font-size: var(--text-albatha-hero-body-desktop);
+    line-height: var(--text-albatha-hero-body-desktop--line-height);
+    font-weight: var(--text-albatha-hero-body-desktop--font-weight);
+    letter-spacing: var(--text-albatha-hero-body-desktop--letter-spacing);
+  }
+
+  .hero-content-layout {
+    justify-content: flex-end;
+    gap: 2.125rem;
+    padding-top: 9rem;
+    padding-bottom: 15.125rem;
+  }
+
+  .hero-columns-layout {
+    grid-template-columns: minmax(0, 1fr) 32.3125rem;
+    align-items: end;
+    gap: 3.625rem;
+  }
+
+  .hero-left-column {
+    max-width: 48rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-phrases-layer {
+    display: none;
   }
 }

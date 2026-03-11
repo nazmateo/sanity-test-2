@@ -1,4 +1,5 @@
 import CTA from '@/app/components/Cta'
+import HeroSection from '@/app/components/HeroSection'
 import InfoSection from '@/app/components/InfoSection'
 import CustomPortableText from '@/app/components/PortableText'
 import type {PortableTextBlock} from 'next-sanity'
@@ -22,6 +23,7 @@ import {
   type CbColumn,
   type CbCover,
   type CbGroup,
+  type HeroSection as HeroSectionBlock,
   type CbLink,
   type CbMedia,
   type PageBuilderSection,
@@ -290,6 +292,80 @@ function renderCoverContent(
   )
 }
 
+function renderHeroColumnContent(
+  column: CbColumn,
+  pageId: string,
+  pageType: string,
+  columnPath: string,
+  isDraftMode: boolean,
+) {
+  return (
+    <div
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: `${columnPath}.children`,
+            }).toString()
+          : undefined
+      }
+      className="space-y-4"
+    >
+      {(column.children || []).map((child, childIndex) => {
+        const childPath = toArrayItemPath(`${columnPath}.children`, child._key, childIndex)
+        const childDataAttr = isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: childPath,
+            }).toString()
+          : undefined
+
+        if (child._type === 'cbHeading') {
+          const as = normalizeHeadingLevel(child.level)
+          return (
+            <Heading
+              key={child._key || `hero-heading-${childIndex}`}
+              as={as}
+              unstyled
+              className={as === 'h1' ? 'type-hero-heading whitespace-pre-line text-white' : 'type-h2 text-white'}
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Heading>
+          )
+        }
+
+        if (child._type === 'cbParagraph') {
+          return (
+            <Paragraph
+              key={child._key || `hero-paragraph-${childIndex}`}
+              unstyled
+              className="type-hero-body text-white"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Paragraph>
+          )
+        }
+
+        return (
+          <BlockRenderer
+            key={child._key || `hero-child-${childIndex}`}
+            block={child}
+            index={childIndex}
+            pageId={pageId}
+            pageType={pageType}
+            blockPath={childPath}
+            isDraftMode={isDraftMode}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
 export default function BlockRenderer({
   block,
   index,
@@ -316,6 +392,7 @@ export default function BlockRenderer({
           data-page-id={pageId}
           data-page-type={pageType}
           data-sanity={blockDataAttr}
+          unstyled
         >
           <Heading as={as}>{block.content || ''}</Heading>
         </BlockSlot>
@@ -558,6 +635,72 @@ export default function BlockRenderer({
           >
             {renderCoverContent(block, pageId, pageType, blockPath, isDraftMode)}
           </Cover>
+        </BlockSlot>
+      )
+    }
+    case 'heroSection': {
+      const heroBlock = block as HeroSectionBlock
+      const columns = heroBlock.content?.columns || []
+      const leftColumn = columns[0]
+      const rightColumn = columns[1]
+      const heroMedia = resolveMediaUrls(heroBlock.backgroundMedia)
+      const leftPath = leftColumn
+        ? toArrayItemPath(`${blockPath}.content.columns`, leftColumn._key, 0)
+        : undefined
+      const rightPath = rightColumn
+        ? toArrayItemPath(`${blockPath}.content.columns`, rightColumn._key, 1)
+        : undefined
+
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+          unstyled
+        >
+          <HeroSection
+            sectionId={heroBlock.sectionId}
+            backgroundImageUrl={heroMedia.imageUrl}
+            backgroundVideoUrl={heroMedia.videoUrl}
+            heroPhrases={heroBlock.heroPhrases}
+            ctaHref={heroBlock.cta ? resolveLinkHref(heroBlock.cta.link, heroBlock.cta.url) : null}
+            ctaLabel={heroBlock.cta?.label}
+            leftContent={
+              leftColumn && leftPath ? (
+                <div
+                  data-sanity={
+                    isDraftMode
+                      ? dataAttr({
+                          id: pageId,
+                          type: pageType,
+                          path: leftPath,
+                        }).toString()
+                      : undefined
+                  }
+                >
+                  {renderHeroColumnContent(leftColumn, pageId, pageType, leftPath, isDraftMode)}
+                </div>
+              ) : null
+            }
+            rightContent={
+              rightColumn && rightPath ? (
+                <div
+                  data-sanity={
+                    isDraftMode
+                      ? dataAttr({
+                          id: pageId,
+                          type: pageType,
+                          path: rightPath,
+                        }).toString()
+                      : undefined
+                  }
+                >
+                  {renderHeroColumnContent(rightColumn, pageId, pageType, rightPath, isDraftMode)}
+                </div>
+              ) : null
+            }
+          />
         </BlockSlot>
       )
     }

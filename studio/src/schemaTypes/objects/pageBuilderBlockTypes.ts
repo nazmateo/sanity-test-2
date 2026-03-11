@@ -15,6 +15,7 @@ export const pageBuilderContainerBlockTypes: BlockType[] = [
   defineArrayMember({type: 'cbButtons'}),
   defineArrayMember({type: 'cbColumns'}),
   defineArrayMember({type: 'cbGroup'}),
+  defineArrayMember({type: 'heroSection'}),
   defineArrayMember({type: 'cbList'}),
   defineArrayMember({type: 'cbNavigation'}),
   defineArrayMember({type: 'cbCover'}),

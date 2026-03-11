@@ -9,7 +9,12 @@ export interface BlockSlotProps extends HTMLAttributes<HTMLDivElement> {
 export const BlockSlot = forwardRef<HTMLDivElement, BlockSlotProps>(
   ({ className, refId, children, unstyled = false, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn(unstyled ? undefined : "rounded border p-3", className)} data-ref-id={refId} {...props}>
+      <div
+        ref={ref}
+        className={cn(unstyled ? undefined : 'rounded border p-3', className)}
+        data-ref-id={refId}
+        {...props}
+      >
         {children}
       </div>
     );

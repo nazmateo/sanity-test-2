@@ -76,6 +76,7 @@ type HeaderProps = {
   settings?: LayoutSettings | null
   header?: SiteHeader
   variant?: HeaderVariant | null
+  overlay?: boolean
 }
 
 function ChevronDownIcon({className}: {className?: string}) {
@@ -455,7 +456,7 @@ function MobileMenuLink({
   )
 }
 
-export default function Header({settings, header, variant}: HeaderProps) {
+export default function Header({settings, header, variant, overlay = false}: HeaderProps) {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [openMobileItemId, setOpenMobileItemId] = useState<string | null>(null)
@@ -491,8 +492,10 @@ export default function Header({settings, header, variant}: HeaderProps) {
     ? 'border-white/15 bg-[linear-gradient(180deg,#151d28_0%,#11161e_100%)] text-white'
     : 'border-black/10 bg-[#f4f4f2] text-foreground'
 
+  const positionClassName = overlay ? 'absolute' : 'fixed'
+
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 border-b ${headerShellClassName}`}>
+    <header className={`${positionClassName} inset-x-0 top-0 z-50 border-b ${headerShellClassName}`}>
       <div className="container">
         <div className="relative flex min-h-[4.625rem] items-center justify-between">
           <button

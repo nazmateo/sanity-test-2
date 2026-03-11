@@ -127,7 +127,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             {cookiePolicyScript}
           </Script>
         ) : null}
-        <section className="min-h-screen pt-24">
+        <section className="min-h-screen">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
           {isDraftMode && (

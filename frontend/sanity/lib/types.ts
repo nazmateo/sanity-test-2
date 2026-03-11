@@ -67,6 +67,12 @@ export type CbHtml = {
   content?: string | null
 }
 
+export type HeroPhrase = {
+  _key?: string
+  _type: 'heroPhrase'
+  text?: string | null
+}
+
 export type CbImage = {
   _key?: string
   _type: 'cbImage'
@@ -147,6 +153,7 @@ export type PageBuilderContainer =
   | CbColumn
   | CbColumns
   | CbCover
+  | HeroSection
 
 export type CbGroup = {
   _key?: string
@@ -173,6 +180,16 @@ export type CbCover = {
   // Legacy field
   url?: string | null
   content?: PageBuilderSection[] | null
+}
+
+export type HeroSection = {
+  _key?: string
+  _type: 'heroSection'
+  sectionId?: string | null
+  backgroundMedia?: CbMedia | null
+  content?: CbColumns | null
+  heroPhrases?: HeroPhrase[] | null
+  cta?: CbButton | null
 }
 
 export type ExtractPageBuilderType<T extends string> = Extract<PageBuilderSection, {_type: T}>

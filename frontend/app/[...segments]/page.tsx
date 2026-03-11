@@ -244,8 +244,8 @@ export default async function CatchAllPage(props: Props) {
     if (!pageWithSeo?._id) {
       return (
         <>
-          <Header settings={layoutSettings} header={siteHeader} />
-          <div className="py-40">
+          <Header settings={layoutSettings} header={siteHeader} overlay />
+          <div className="py-40 pt-32">
             <PageOnboarding />
           </div>
           <Footer footer={siteFooter} settings={layoutSettings} />
@@ -255,20 +255,11 @@ export default async function CatchAllPage(props: Props) {
 
     return (
       <>
-        <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} />
+        <Header settings={layoutSettings} header={siteHeader} variant={pageWithSeo.headerVariant} overlay />
         {customStructuredData ? (
           <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}} />
         ) : null}
-        <div className="my-12 lg:my-24">
-          <div className="container">
-            <div className="pb-6 border-b border-gray-100">
-              <div className="max-w-3xl">
-                <h1 className="text-4xl text-gray-900 sm:text-5xl lg:text-7xl">{pageWithSeo.name}</h1>
-              </div>
-            </div>
-          </div>
-          <PageBuilderPage page={page as PageDocumentForBuilder} />
-        </div>
+        <PageBuilderPage page={page as PageDocumentForBuilder} />
         <Footer footer={siteFooter} variant={pageWithSeo.footerVariant} settings={layoutSettings} />
       </>
     )
@@ -301,7 +292,7 @@ export default async function CatchAllPage(props: Props) {
     return (
       <>
         <Header settings={layoutSettings} header={siteHeader} variant={page.headerVariant} />
-        <div className="container py-16 lg:py-24">
+        <div className="container py-16 pt-32 lg:py-24 lg:pt-36">
           <article className="max-w-3xl prose prose-gray">
             <h1>{page.title || (match.slug === 'privacy-policy' ? 'Privacy Policy' : 'Terms and Conditions')}</h1>
             {page.content?.length ? <PortableText value={page.content} /> : null}
@@ -338,7 +329,7 @@ export default async function CatchAllPage(props: Props) {
       return (
         <>
           <Header settings={layoutSettings} header={siteHeader} />
-          <div className="py-40">
+          <div className="py-40 pt-32">
             <PageOnboarding />
           </div>
           <Footer footer={siteFooter} settings={layoutSettings} />
@@ -354,7 +345,7 @@ export default async function CatchAllPage(props: Props) {
       {customStructuredData ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(customStructuredData)}} />
       ) : null}
-      <div className="my-12 lg:my-24">
+      <div className="my-12 pt-24 lg:my-24 lg:pt-28">
         <div className="container">
           <div className="pb-6 border-b border-gray-100">
             <div className="max-w-3xl">

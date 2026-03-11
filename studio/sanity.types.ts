@@ -198,6 +198,24 @@ export type MenuLink = {
   >
 }
 
+export type HeroSection = {
+  _type: 'heroSection'
+  sectionId?: string
+  backgroundMedia: CbMedia
+  content: CbColumns
+  heroPhrases: Array<
+    {
+      _key: string
+    } & HeroPhrase
+  >
+  cta: CbButton
+}
+
+export type HeroPhrase = {
+  _type: 'heroPhrase'
+  text: string
+}
+
 export type SanityFileAssetReference = {
   _ref: string
   _type: 'reference'
@@ -296,6 +314,9 @@ export type CbGroup = {
       } & CbGroup)
     | ({
         _key: string
+      } & HeroSection)
+    | ({
+        _key: string
       } & CbList)
     | ({
         _key: string
@@ -370,6 +391,9 @@ export type CbColumn = {
     | ({
         _key: string
       } & CbGroup)
+    | ({
+        _key: string
+      } & HeroSection)
     | ({
         _key: string
       } & CbList)
@@ -706,6 +730,9 @@ export type HomePage = {
       } & CbGroup)
     | ({
         _key: string
+      } & HeroSection)
+    | ({
+        _key: string
       } & CbList)
     | ({
         _key: string
@@ -784,6 +811,9 @@ export type Page = {
     | ({
         _key: string
       } & CbGroup)
+    | ({
+        _key: string
+      } & HeroSection)
     | ({
         _key: string
       } & CbList)
@@ -932,6 +962,8 @@ export type AllSanitySchemaTypes =
   | MenuSubLink
   | MenuDropdownGroup
   | MenuLink
+  | HeroSection
+  | HeroPhrase
   | SanityFileAssetReference
   | CbMedia
   | CbList
