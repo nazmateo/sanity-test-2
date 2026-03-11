@@ -1,9 +1,11 @@
 import AboutUsSection from '@/app/components/AboutUsSection'
+import BlogPostsSection from '@/app/components/BlogPostsSection'
 import CTA from '@/app/components/Cta'
 import CompaniesSection from '@/app/components/CompaniesSection'
 import HeroSection from '@/app/components/HeroSection'
 import InfoSection from '@/app/components/InfoSection'
 import SectorsSection from '@/app/components/SectorsSection'
+import NewsPostCard from '@/app/components/NewsPostCard'
 import CustomPortableText from '@/app/components/PortableText'
 import type {PortableTextBlock} from 'next-sanity'
 import type {ReactNode} from 'react'
@@ -35,7 +37,12 @@ import {
   type HeroSection as HeroSectionBlock,
   type CbLink,
   type CbMedia,
+  type BlogPostsSection as BlogPostsSectionBlock,
+  type BackToTopBlock,
+  type NewsFeaturedPostBlock,
+  type NewsPostCardsBlock,
   type PageBuilderSection,
+  type PostReference,
   type SectorsListBlock,
   type SectorsMediaBlock,
   type SectorsSection as SectorsSectionBlock,
@@ -145,7 +152,7 @@ function fileAssetRefToUrl(ref?: string | null): string | null {
 }
 
 function resolveMediaUrls(media?: CbMedia | null) {
-  const imageRef = media?.image?.asset?._ref
+  const imageRef = media?.image?.asset?._ref || media?.image?.asset?._id
   const videoRef = media?.videoFile?.asset?._ref
 
   return {
@@ -605,6 +612,72 @@ function renderSectorsImage(
   }
 
   return <Image src={url} alt={resolved.alt || fallbackAlt} unstyled className={className} />
+}
+
+function formatPostDate(value?: string | null) {
+  if (!value) {
+    return ''
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date)
+}
+
+function resolvePostHref(post?: PostReference | null) {
+  const slug = post?.slug?.current
+  if (!slug) {
+    return null
+  }
+
+  return `/news/${slug}`
+}
+
+function renderPostCardImage(post?: PostReference | null) {
+  if (!post?.cardImage) {
+    return null
+  }
+
+  return resolveMediaUrls({
+    _type: 'cbMedia',
+    mediaType: 'image',
+    image: {
+      asset: post.cardImage.asset || undefined,
+      alt: post.cardImage.alt || undefined,
+    },
+  }).imageUrl
+}
+
+function extractBlogRows(rows: CbGroup[] | null | undefined) {
+  const featuredRow = rows?.[0]
+  const postsRow = rows?.[1]
+  const backToTopRow = rows?.[2]
+  const featuredBlock = featuredRow?.children?.find((child) => child._type === 'newsFeaturedPostBlock')
+  const postsBlock = postsRow?.children?.find((child) => child._type === 'newsPostCardsBlock')
+  const backToTopBlock = backToTopRow?.children?.find((child) => child._type === 'backToTopBlock')
+
+  return {
+    featuredPost:
+      featuredBlock && featuredBlock._type === 'newsFeaturedPostBlock'
+        ? (featuredBlock as NewsFeaturedPostBlock).post || null
+        : null,
+    posts:
+      postsBlock && postsBlock._type === 'newsPostCardsBlock'
+        ? (postsBlock as NewsPostCardsBlock).posts || []
+        : [],
+    backToTop:
+      backToTopBlock && backToTopBlock._type === 'backToTopBlock'
+        ? (backToTopBlock as BackToTopBlock)
+        : null,
+  }
 }
 
 function extractSectorsRowContent(rows: CbGroup[] | null | undefined) {
@@ -1152,6 +1225,61 @@ export default function BlockRenderer({
             )}
             items={items}
             resolveHref={(item: CompanyFeatureItem) => resolveLinkHref(item.link, null)}
+          />
+        </BlockSlot>
+      )
+    }
+    case 'blogPostsSection': {
+      const blogBlock = block as BlogPostsSectionBlock
+      const {featuredPost, posts, backToTop} = extractBlogRows(blogBlock.rows)
+      const featuredHref = resolvePostHref(featuredPost)
+      const featuredDate = formatPostDate(featuredPost?.publishedAt)
+      const backToTopHref = backToTop?.targetSectionId ? `#${backToTop.targetSectionId}` : null
+
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+          unstyled
+        >
+          <BlogPostsSection
+            sectionId={blogBlock.sectionId}
+            featuredPost={
+              featuredPost && featuredHref ? (
+                <NewsPostCard
+                  featured
+                  title={featuredPost.title || ''}
+                  date={featuredDate}
+                  href={featuredHref}
+                  excerpt={featuredPost.excerpt || ''}
+                  imageUrl={renderPostCardImage(featuredPost)}
+                  imageAlt={featuredPost.cardImage?.alt || featuredPost.title || ''}
+                />
+              ) : null
+            }
+            postsGrid={
+              <>
+                {posts.map((post, postIndex) => {
+                  const href = resolvePostHref(post)
+                  if (!href) {
+                    return null
+                  }
+
+                  return (
+                    <NewsPostCard
+                      key={post._id || `news-post-${postIndex}`}
+                      title={post.title || ''}
+                      date={formatPostDate(post.publishedAt)}
+                      href={href}
+                    />
+                  )
+                })}
+              </>
+            }
+            backToTopHref={backToTopHref}
+            backToTopLabel={backToTop?.label || null}
           />
         </BlockSlot>
       )

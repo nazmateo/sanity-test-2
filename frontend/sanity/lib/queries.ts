@@ -145,6 +145,22 @@ const cbWysiwygWithResolvedLinksProjection = /* groq */ `
   }
 `
 
+const postReferenceProjection = /* groq */ `
+  ...,
+  slug,
+  cardImage{
+    ...,
+    asset->
+  },
+  seo{
+    ...,
+    ogImage{
+      ...,
+      asset->
+    }
+  }
+`
+
 const heroSectionProjection = /* groq */ `
   _type == "heroSection" => {
     ...,
@@ -288,6 +304,49 @@ const companiesSectionProjection = /* groq */ `
   }
 `
 
+const newsFeaturedPostBlockProjection = /* groq */ `
+  _type == "newsFeaturedPostBlock" => {
+    ...,
+    post->{
+      ${postReferenceProjection}
+    }
+  }
+`
+
+const newsPostCardsBlockProjection = /* groq */ `
+  _type == "newsPostCardsBlock" => {
+    ...,
+    "posts": posts[]->{
+      ${postReferenceProjection}
+    }
+  }
+`
+
+const backToTopBlockProjection = /* groq */ `
+  _type == "backToTopBlock" => {
+    ...
+  }
+`
+
+const blogPostsSectionProjection = /* groq */ `
+  _type == "blogPostsSection" => {
+    ...,
+    rows[] {
+      ...,
+      children[]{
+        ...,
+        ${cbButtonWithLinkProjection},
+        ${cbButtonsWithLinksProjection},
+        ${cbNavigationWithLinksProjection},
+        ${newsFeaturedPostBlockProjection},
+        ${newsPostCardsBlockProjection},
+        ${backToTopBlockProjection},
+        ${cbWysiwygWithResolvedLinksProjection}
+      }
+    }
+  }
+`
+
 export const getPageQuery = defineQuery(`
   *[
     _type == 'page' &&
@@ -314,9 +373,13 @@ export const getPageQuery = defineQuery(`
       ${cbButtonWithLinkProjection},
       ${cbButtonsWithLinksProjection},
       ${aboutUsSectionProjection},
+      ${backToTopBlockProjection},
+      ${blogPostsSectionProjection},
       ${cbNavigationWithLinksProjection},
       ${companiesSectionProjection},
       ${heroSectionProjection},
+      ${newsFeaturedPostBlockProjection},
+      ${newsPostCardsBlockProjection},
       ${sectorsSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
@@ -326,9 +389,13 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -340,9 +407,13 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -354,9 +425,13 @@ export const getPageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -370,9 +445,13 @@ export const getPageQuery = defineQuery(`
             ${cbButtonWithLinkProjection},
             ${cbButtonsWithLinksProjection},
             ${aboutUsSectionProjection},
+            ${backToTopBlockProjection},
+            ${blogPostsSectionProjection},
             ${cbNavigationWithLinksProjection},
             ${companiesSectionProjection},
             ${heroSectionProjection},
+            ${newsFeaturedPostBlockProjection},
+            ${newsPostCardsBlockProjection},
             ${sectorsSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
@@ -405,9 +484,13 @@ export const homePageQuery = defineQuery(`
       ${cbButtonWithLinkProjection},
       ${cbButtonsWithLinksProjection},
       ${aboutUsSectionProjection},
+      ${backToTopBlockProjection},
+      ${blogPostsSectionProjection},
       ${cbNavigationWithLinksProjection},
       ${companiesSectionProjection},
       ${heroSectionProjection},
+      ${newsFeaturedPostBlockProjection},
+      ${newsPostCardsBlockProjection},
       ${sectorsSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
@@ -417,9 +500,13 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -431,9 +518,13 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -445,9 +536,13 @@ export const homePageQuery = defineQuery(`
           ${cbButtonWithLinkProjection},
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
           ${cbNavigationWithLinksProjection},
           ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
           ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
@@ -461,15 +556,150 @@ export const homePageQuery = defineQuery(`
             ${cbButtonWithLinkProjection},
             ${cbButtonsWithLinksProjection},
             ${aboutUsSectionProjection},
+            ${backToTopBlockProjection},
+            ${blogPostsSectionProjection},
             ${cbNavigationWithLinksProjection},
             ${companiesSectionProjection},
             ${heroSectionProjection},
+            ${newsFeaturedPostBlockProjection},
+            ${newsPostCardsBlockProjection},
             ${sectorsSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
         }
       }
     }
+  }
+`)
+
+export const postBySlugQuery = defineQuery(`
+  *[
+    _type == "post" &&
+    slug.current == $slug &&
+    coalesce(language, "en") == $language
+  ][0]{
+    _id,
+    _type,
+    title,
+    language,
+    slug,
+    publishedAt,
+    excerpt,
+    body,
+    headerVariant,
+    footerVariant,
+    cardImage{
+      ...,
+      asset->
+    },
+    seo{
+      ...,
+      ogImage{
+        ...,
+        asset->
+      }
+    },
+    structuredData,
+    "pageBuilder": pageBuilder[]{
+      ...,
+      ${cbButtonWithLinkProjection},
+      ${cbButtonsWithLinksProjection},
+      ${aboutUsSectionProjection},
+      ${backToTopBlockProjection},
+      ${blogPostsSectionProjection},
+      ${cbNavigationWithLinksProjection},
+      ${companiesSectionProjection},
+      ${heroSectionProjection},
+      ${newsFeaturedPostBlockProjection},
+      ${newsPostCardsBlockProjection},
+      ${sectorsSectionProjection},
+      ${cbWysiwygWithResolvedLinksProjection},
+      _type == "cbGroup" => {
+        ...,
+        children[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
+          ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
+          ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
+          ${sectorsSectionProjection},
+          ${cbWysiwygWithResolvedLinksProjection}
+        }
+      },
+      _type == "cbColumn" => {
+        ...,
+        children[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
+          ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
+          ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
+          ${sectorsSectionProjection},
+          ${cbWysiwygWithResolvedLinksProjection}
+        }
+      },
+      _type == "cbCover" => {
+        ...,
+        content[]{
+          ...,
+          ${cbButtonWithLinkProjection},
+          ${cbButtonsWithLinksProjection},
+          ${aboutUsSectionProjection},
+          ${backToTopBlockProjection},
+          ${blogPostsSectionProjection},
+          ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
+          ${heroSectionProjection},
+          ${newsFeaturedPostBlockProjection},
+          ${newsPostCardsBlockProjection},
+          ${sectorsSectionProjection},
+          ${cbWysiwygWithResolvedLinksProjection}
+        }
+      },
+      _type == "cbColumns" => {
+        ...,
+        columns[]{
+          ...,
+          children[]{
+            ...,
+            ${cbButtonWithLinkProjection},
+            ${cbButtonsWithLinksProjection},
+            ${aboutUsSectionProjection},
+            ${backToTopBlockProjection},
+            ${blogPostsSectionProjection},
+            ${cbNavigationWithLinksProjection},
+            ${companiesSectionProjection},
+            ${heroSectionProjection},
+            ${newsFeaturedPostBlockProjection},
+            ${newsPostCardsBlockProjection},
+            ${sectorsSectionProjection},
+            ${cbWysiwygWithResolvedLinksProjection}
+          }
+        }
+      }
+    }
+  }
+`)
+
+export const postSlugsQuery = defineQuery(`
+  *[
+    _type == "post" &&
+    defined(slug.current) &&
+    coalesce(language, "en") == $language
+  ]{
+    "slug": slug.current
   }
 `)
 

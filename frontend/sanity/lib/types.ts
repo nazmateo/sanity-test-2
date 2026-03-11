@@ -39,7 +39,7 @@ export type CbMedia = {
   _type: 'cbMedia'
   mediaType?: 'image' | 'video' | null
   image?: {
-    asset?: {_ref?: string} | null
+    asset?: {_ref?: string; _id?: string} | null
     alt?: string | null
     crop?: any
     hotspot?: any
@@ -99,6 +99,52 @@ export type CompanyFeaturesBlock = {
   _key?: string
   _type: 'companyFeaturesBlock'
   items?: CompanyFeatureItem[] | null
+}
+
+export type PostReference = {
+  _id?: string
+  _type?: 'post'
+  title?: string | null
+  slug?: {current?: string | null} | null
+  publishedAt?: string | null
+  excerpt?: string | null
+  body?: unknown[] | null
+  headerVariant?: 'positive' | 'negative' | null
+  footerVariant?: 'positive' | 'negative' | null
+  pageBuilder?: PageBuilderSection[] | null
+  cardImage?: {
+    asset?: {_ref?: string; _id?: string} | null
+    alt?: string | null
+  } | null
+  seo?: {
+    metaTitle?: string | null
+    metaDescription?: string | null
+    canonicalUrl?: string | null
+    noIndex?: boolean | null
+    ogTitle?: string | null
+    ogDescription?: string | null
+    ogImage?: unknown
+  } | null
+  structuredData?: string | null
+}
+
+export type NewsFeaturedPostBlock = {
+  _key?: string
+  _type: 'newsFeaturedPostBlock'
+  post?: PostReference | null
+}
+
+export type NewsPostCardsBlock = {
+  _key?: string
+  _type: 'newsPostCardsBlock'
+  posts?: PostReference[] | null
+}
+
+export type BackToTopBlock = {
+  _key?: string
+  _type: 'backToTopBlock'
+  label?: string | null
+  targetSectionId?: string | null
 }
 
 export type SectorsListBlock = {
@@ -189,6 +235,8 @@ export type PageBuilderAtom = CbHeading | CbParagraph | CbWysiwyg | CbHtml | CbI
 export type PageBuilderContainer =
   | AboutStatsBlock
   | AboutUsSection
+  | BackToTopBlock
+  | BlogPostsSection
   | CbButtons
   | CbList
   | CbNavigation
@@ -199,6 +247,8 @@ export type PageBuilderContainer =
   | CompaniesSection
   | CompanyFeaturesBlock
   | HeroSection
+  | NewsFeaturedPostBlock
+  | NewsPostCardsBlock
   | SectorsListBlock
   | SectorsMediaBlock
   | SectorsSection
@@ -259,6 +309,13 @@ export type CompaniesSection = {
   _type: 'companiesSection'
   sectionId?: string | null
   backgroundImage?: CbMedia | null
+  rows?: CbGroup[] | null
+}
+
+export type BlogPostsSection = {
+  _key?: string
+  _type: 'blogPostsSection'
+  sectionId?: string | null
   rows?: CbGroup[] | null
 }
 

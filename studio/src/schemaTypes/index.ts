@@ -1,5 +1,6 @@
 import {page} from './documents/page'
 import {legalPage} from './documents/legalPage'
+import {post} from './documents/post'
 import {header} from './singletons/header'
 import {footer} from './singletons/footer'
 import {settings} from './singletons/settings'
@@ -9,6 +10,8 @@ import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {aboutStatCard} from './objects/aboutStatCard'
 import {aboutStatsBlock} from './objects/aboutStatsBlock'
 import {aboutUsSection} from './objects/aboutUsSection'
+import {backToTopBlock} from './objects/backToTopBlock'
+import {blogPostsSection} from './objects/blogPostsSection'
 import {companiesSection} from './objects/companiesSection'
 import cbButton from './objects/button'
 import cbButtons from './objects/buttons'
@@ -31,6 +34,8 @@ import {menuGroup} from './objects/menuGroup'
 import {menuLink} from './objects/menuLink'
 import {menuDropdownGroup} from './objects/menuDropdownGroup'
 import {menuSubLink} from './objects/menuSubLink'
+import {newsFeaturedPostBlock} from './objects/newsFeaturedPostBlock'
+import {newsPostCardsBlock} from './objects/newsPostCardsBlock'
 import {sectorsListBlock} from './objects/sectorsListBlock'
 import {sectorsMediaBlock} from './objects/sectorsMediaBlock'
 import {sectorsSection} from './objects/sectorsSection'
@@ -51,10 +56,13 @@ export const schemaTypes = [
   // Documents
   page,
   legalPage,
+  post,
   // Objects
   aboutStatCard,
   aboutStatsBlock,
   aboutUsSection,
+  backToTopBlock,
+  blogPostsSection,
   companiesSection,
   cbButton,
   cbButtons,
@@ -77,6 +85,8 @@ export const schemaTypes = [
   menuLink,
   menuDropdownGroup,
   menuSubLink,
+  newsFeaturedPostBlock,
+  newsPostCardsBlock,
   sectorsListBlock,
   sectorsMediaBlock,
   sectorsSection,

@@ -46,6 +46,20 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
                   .params({defaultLanguage: DEFAULT_LANGUAGE}),
               )
           }
+          if (listItem.getId() === 'post') {
+            return S.listItem()
+              .id('post')
+              .title('Post')
+              .schemaType('post')
+              .child(
+                S.documentList()
+                  .title('Posts')
+                  .schemaType('post')
+                  .defaultOrdering([{field: 'publishedAt', direction: 'desc'}])
+                  .filter('_type == "post" && coalesce(language, "en") == $defaultLanguage')
+                  .params({defaultLanguage: DEFAULT_LANGUAGE}),
+              )
+          }
 
           return listItem
         })
