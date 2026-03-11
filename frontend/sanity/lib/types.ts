@@ -73,6 +73,14 @@ export type HeroPhrase = {
   text?: string | null
 }
 
+export type AboutStatCard = {
+  _key?: string
+  _type: 'aboutStatCard'
+  value?: string | null
+  label?: string | null
+  variant?: 'dark' | 'blue' | 'outline' | null
+}
+
 export type CbImage = {
   _key?: string
   _type: 'cbImage'
@@ -146,6 +154,7 @@ export type PageBuilderSection =
 export type PageBuilderAtom = CbHeading | CbParagraph | CbWysiwyg | CbHtml | CbImage
 
 export type PageBuilderContainer =
+  | AboutUsSection
   | CbButtons
   | CbList
   | CbNavigation
@@ -190,6 +199,14 @@ export type HeroSection = {
   content?: CbColumns | null
   heroPhrases?: HeroPhrase[] | null
   cta?: CbButton | null
+}
+
+export type AboutUsSection = {
+  _key?: string
+  _type: 'aboutUsSection'
+  sectionId?: string | null
+  introContent?: CbColumns | null
+  stats?: AboutStatCard[] | null
 }
 
 export type ExtractPageBuilderType<T extends string> = Extract<PageBuilderSection, {_type: T}>

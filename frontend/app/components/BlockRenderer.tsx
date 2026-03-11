@@ -1,3 +1,4 @@
+import AboutUsSection from '@/app/components/AboutUsSection'
 import CTA from '@/app/components/Cta'
 import HeroSection from '@/app/components/HeroSection'
 import InfoSection from '@/app/components/InfoSection'
@@ -23,6 +24,7 @@ import {
   type CbColumn,
   type CbCover,
   type CbGroup,
+  type AboutUsSection as AboutUsSectionBlock,
   type HeroSection as HeroSectionBlock,
   type CbLink,
   type CbMedia,
@@ -366,6 +368,130 @@ function renderHeroColumnContent(
   )
 }
 
+function renderAboutImageColumn(
+  column: CbColumn | undefined,
+  pageId: string,
+  pageType: string,
+  columnPath: string | undefined,
+  isDraftMode: boolean,
+) {
+  if (!column || !columnPath) {
+    return null
+  }
+
+  const imageBlock = (column.children || []).find((child) => child._type === 'cbImage')
+  if (!imageBlock || imageBlock._type !== 'cbImage') {
+    return null
+  }
+
+  const childIndex = (column.children || []).findIndex((child) => child._key === imageBlock._key)
+  const childPath = toArrayItemPath(`${columnPath}.children`, imageBlock._key, childIndex >= 0 ? childIndex : 0)
+  const media = resolveMediaUrls(imageBlock.media)
+  const url = media.imageUrl || imageBlock.url || ''
+
+  if (!url) {
+    return null
+  }
+
+  return (
+    <div
+      data-sanity={
+        isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: childPath,
+            }).toString()
+          : undefined
+      }
+    >
+      <Image src={url} alt={media.alt || imageBlock.alt || ''} unstyled className="about-image-media" />
+    </div>
+  )
+}
+
+function renderAboutTextColumn(
+  column: CbColumn | undefined,
+  pageId: string,
+  pageType: string,
+  columnPath: string | undefined,
+  isDraftMode: boolean,
+) {
+  if (!column || !columnPath) {
+    return {
+      content: null,
+      ctaHref: null,
+      ctaLabel: null,
+    }
+  }
+
+  let ctaHref: string | null = null
+  let ctaLabel: string | null = null
+
+  const content = (
+    <div className="about-copy-text">
+      {(column.children || []).map((child, childIndex) => {
+        const childPath = toArrayItemPath(`${columnPath}.children`, child._key, childIndex)
+        const childDataAttr = isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: childPath,
+            }).toString()
+          : undefined
+
+        if (child._type === 'cbHeading') {
+          const as = normalizeHeadingLevel(child.level)
+          return (
+            <Heading
+              key={child._key || `about-heading-${childIndex}`}
+              as={as}
+              unstyled
+              className="type-h2 text-foreground"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Heading>
+          )
+        }
+
+        if (child._type === 'cbParagraph') {
+          return (
+            <Paragraph
+              key={child._key || `about-paragraph-${childIndex}`}
+              unstyled
+              className="type-body text-foreground"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Paragraph>
+          )
+        }
+
+        if (child._type === 'cbButton') {
+          ctaHref = resolveLinkHref(child.link, child.url)
+          ctaLabel = child.label || child.text || null
+          return null
+        }
+
+        return (
+          <BlockRenderer
+            key={child._key || `about-child-${childIndex}`}
+            block={child}
+            index={childIndex}
+            pageId={pageId}
+            pageType={pageType}
+            blockPath={childPath}
+            isDraftMode={isDraftMode}
+          />
+        )
+      })}
+    </div>
+  )
+
+  return {content, ctaHref, ctaLabel}
+}
+
 export default function BlockRenderer({
   block,
   index,
@@ -700,6 +826,44 @@ export default function BlockRenderer({
                 </div>
               ) : null
             }
+          />
+        </BlockSlot>
+      )
+    }
+    case 'aboutUsSection': {
+      const aboutBlock = block as AboutUsSectionBlock
+      const columns = aboutBlock.introContent?.columns || []
+      const imageColumn = columns[0]
+      const textColumn = columns[1]
+      const imageColumnPath = imageColumn
+        ? toArrayItemPath(`${blockPath}.introContent.columns`, imageColumn._key, 0)
+        : undefined
+      const textColumnPath = textColumn
+        ? toArrayItemPath(`${blockPath}.introContent.columns`, textColumn._key, 1)
+        : undefined
+      const {content, ctaHref, ctaLabel} = renderAboutTextColumn(
+        textColumn,
+        pageId,
+        pageType,
+        textColumnPath,
+        isDraftMode,
+      )
+
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+          unstyled
+        >
+          <AboutUsSection
+            sectionId={aboutBlock.sectionId}
+            image={renderAboutImageColumn(imageColumn, pageId, pageType, imageColumnPath, isDraftMode)}
+            textContent={content}
+            ctaHref={ctaHref}
+            ctaLabel={ctaLabel}
+            stats={aboutBlock.stats}
           />
         </BlockSlot>
       )

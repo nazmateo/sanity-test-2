@@ -6,6 +6,8 @@ import {settings} from './singletons/settings'
 import {homePage} from './singletons/homePage'
 import {blockContent} from './objects/blockContent'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
+import {aboutStatCard} from './objects/aboutStatCard'
+import {aboutUsSection} from './objects/aboutUsSection'
 import cbButton from './objects/button'
 import cbButtons from './objects/buttons'
 import cbColumn from './objects/column'
@@ -43,6 +45,8 @@ export const schemaTypes = [
   page,
   legalPage,
   // Objects
+  aboutStatCard,
+  aboutUsSection,
   cbButton,
   cbButtons,
   cbColumn,
