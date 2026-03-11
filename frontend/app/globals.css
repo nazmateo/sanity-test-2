@@ -173,6 +173,21 @@
   --text-albatha-about-cta--font-weight: 500;
   --text-albatha-about-cta--letter-spacing: 0;
 
+  --text-albatha-companies-body: 2.1875rem;
+  --text-albatha-companies-body--line-height: 1.2857142857;
+  --text-albatha-companies-body--font-weight: 400;
+  --text-albatha-companies-body--letter-spacing: 0;
+
+  --text-albatha-company-title: 1.75rem;
+  --text-albatha-company-title--line-height: 1.3;
+  --text-albatha-company-title--font-weight: 400;
+  --text-albatha-company-title--letter-spacing: 0;
+
+  --text-albatha-company-category: 1.125rem;
+  --text-albatha-company-category--line-height: 1.3;
+  --text-albatha-company-category--font-weight: 400;
+  --text-albatha-company-category--letter-spacing: 0;
+
   /* Compatibility aliases for existing starter classes */
   --color-framework: #000;
   --color-black: #151d28;
@@ -374,6 +389,30 @@
   font-weight: var(--text-albatha-about-cta--font-weight);
   letter-spacing: var(--text-albatha-about-cta--letter-spacing);
   text-transform: uppercase;
+}
+
+@utility type-companies-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-companies-body);
+  line-height: var(--text-albatha-companies-body--line-height);
+  font-weight: var(--text-albatha-companies-body--font-weight);
+  letter-spacing: var(--text-albatha-companies-body--letter-spacing);
+}
+
+@utility type-company-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-company-title);
+  line-height: var(--text-albatha-company-title--line-height);
+  font-weight: var(--text-albatha-company-title--font-weight);
+  letter-spacing: var(--text-albatha-company-title--letter-spacing);
+}
+
+@utility type-company-category {
+  font-family: var(--font-sans);
+  font-size: var(--text-albatha-company-category);
+  line-height: var(--text-albatha-company-category--line-height);
+  font-weight: var(--text-albatha-company-category--font-weight);
+  letter-spacing: var(--text-albatha-company-category--letter-spacing);
 }
 
 @utility footer-content-width {
@@ -733,6 +772,196 @@
   justify-content: flex-end;
 }
 
+@utility arrow-square-link {
+  display: inline-flex;
+  height: 4.875rem;
+  width: 5.4375rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  background: var(--color-brand-orange);
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+@utility sectors-section-shell {
+  background: var(--color-background);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@utility sectors-content-width {
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+}
+
+@utility sectors-main-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@utility sectors-heading-wrap {
+  max-width: 55.25rem;
+}
+
+@utility sectors-body-layout {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@utility sectors-list-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@utility sectors-left-image-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+@utility sectors-left-image {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@utility sectors-list-fade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(248, 248, 248, 1) 2.4639%,
+    rgba(248, 248, 248, 0) 33.54%,
+    rgba(248, 248, 248, 0) 64.542%,
+    rgba(248, 248, 248, 1) 101.55%
+  );
+}
+
+@utility sectors-media-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+}
+
+@utility sectors-media-image {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@utility sectors-media-cta {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: end;
+  gap: 0.0625rem;
+}
+
+@utility sectors-media-label {
+  display: flex;
+  min-width: 16.75rem;
+  justify-content: center;
+  color: var(--color-white);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@utility companies-section-shell {
+  position: relative;
+  overflow: hidden;
+  padding-top: 4rem;
+  padding-bottom: 2.5rem;
+}
+
+@utility companies-background-layer {
+  position: absolute;
+  inset: 0;
+}
+
+@utility companies-background-image {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@utility companies-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(21, 29, 40, 0.2) 58.295%,
+    var(--color-foreground) 97.98%
+  );
+}
+
+@utility companies-content-width {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+}
+
+@utility companies-main-layout {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+@utility companies-heading-wrap {
+  width: 100%;
+  max-width: 75rem;
+  text-align: center;
+  color: var(--color-white);
+}
+
+@utility companies-features-row {
+  display: grid;
+  width: 100%;
+  gap: 1.5rem;
+}
+
+@utility company-feature-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+@utility company-feature-card {
+  position: relative;
+  min-height: 5.3125rem;
+  padding-top: 0.5625rem;
+  padding-bottom: 0.1875rem;
+}
+
+@utility company-feature-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+@utility company-feature-line {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.75);
+}
+
 @keyframes heroPhraseReveal {
   from {
     opacity: 0;
@@ -810,6 +1039,58 @@
 
   .about-stats-column {
     height: 37.5rem;
+  }
+
+  .sectors-section-shell {
+    padding-top: 6.25rem;
+    padding-bottom: 6.25rem;
+  }
+
+  .sectors-main-layout {
+    gap: 5rem;
+  }
+
+  .sectors-body-layout {
+    grid-template-columns: 61.0625rem 32.3125rem;
+    align-items: end;
+    column-gap: 6.625rem;
+  }
+
+  .sectors-list-stack {
+    width: 61.0625rem;
+    height: 38.625rem;
+  }
+
+  .sectors-media-frame {
+    width: 32.3125rem;
+    height: 37.87725rem;
+  }
+
+  .sectors-media-label {
+    padding-bottom: 0.125rem;
+  }
+
+  .companies-section-shell {
+    min-height: 67.8125rem;
+    padding-top: 6.25rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .companies-content-width {
+    position: relative;
+    bottom: -43.4375rem;
+  }
+
+  .companies-main-layout {
+    gap: 3.75rem;
+  }
+
+  .companies-heading-wrap {
+    max-width: 75rem;
+  }
+
+  .companies-features-row {
+    grid-template-columns: repeat(6, 15.4375rem);
   }
 }
 

@@ -81,6 +81,39 @@ export type AboutStatCard = {
   variant?: 'dark' | 'blue' | 'outline' | null
 }
 
+export type AboutStatsBlock = {
+  _key?: string
+  _type: 'aboutStatsBlock'
+  stats?: AboutStatCard[] | null
+}
+
+export type CompanyFeatureItem = {
+  _key?: string
+  _type: 'companyFeatureItem'
+  title?: string | null
+  category?: string | null
+  link?: CbLink | null
+}
+
+export type CompanyFeaturesBlock = {
+  _key?: string
+  _type: 'companyFeaturesBlock'
+  items?: CompanyFeatureItem[] | null
+}
+
+export type SectorsListBlock = {
+  _key?: string
+  _type: 'sectorsListBlock'
+  leftImage?: CbMedia | null
+}
+
+export type SectorsMediaBlock = {
+  _key?: string
+  _type: 'sectorsMediaBlock'
+  rightImage?: CbMedia | null
+  cta?: CbButton | null
+}
+
 export type CbImage = {
   _key?: string
   _type: 'cbImage'
@@ -154,6 +187,7 @@ export type PageBuilderSection =
 export type PageBuilderAtom = CbHeading | CbParagraph | CbWysiwyg | CbHtml | CbImage
 
 export type PageBuilderContainer =
+  | AboutStatsBlock
   | AboutUsSection
   | CbButtons
   | CbList
@@ -162,7 +196,12 @@ export type PageBuilderContainer =
   | CbColumn
   | CbColumns
   | CbCover
+  | CompaniesSection
+  | CompanyFeaturesBlock
   | HeroSection
+  | SectorsListBlock
+  | SectorsMediaBlock
+  | SectorsSection
 
 export type CbGroup = {
   _key?: string
@@ -205,8 +244,22 @@ export type AboutUsSection = {
   _key?: string
   _type: 'aboutUsSection'
   sectionId?: string | null
-  introContent?: CbColumns | null
-  stats?: AboutStatCard[] | null
+  rows?: CbGroup[] | null
+}
+
+export type SectorsSection = {
+  _key?: string
+  _type: 'sectorsSection'
+  sectionId?: string | null
+  rows?: CbGroup[] | null
+}
+
+export type CompaniesSection = {
+  _key?: string
+  _type: 'companiesSection'
+  sectionId?: string | null
+  backgroundImage?: CbMedia | null
+  rows?: CbGroup[] | null
 }
 
 export type ExtractPageBuilderType<T extends string> = Extract<PageBuilderSection, {_type: T}>

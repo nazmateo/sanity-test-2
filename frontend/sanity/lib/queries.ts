@@ -174,17 +174,115 @@ const heroSectionProjection = /* groq */ `
 const aboutUsSectionProjection = /* groq */ `
   _type == "aboutUsSection" => {
     ...,
-    introContent{
+    rows[]{
       ...,
-      columns[]{
+      children[]{
         ...,
-        children[]{
+        ${cbButtonWithLinkProjection},
+        ${cbButtonsWithLinksProjection},
+        ${cbNavigationWithLinksProjection},
+        ${cbWysiwygWithResolvedLinksProjection},
+        _type == "aboutStatsBlock" => {
           ...,
-          ${cbButtonWithLinkProjection},
-          ${cbButtonsWithLinksProjection},
-          ${cbNavigationWithLinksProjection},
-          ${cbWysiwygWithResolvedLinksProjection}
+          stats[]{
+            ...
+          }
+        },
+        _type == "cbColumns" => {
+          ...,
+          columns[]{
+            ...,
+            children[]{
+              ...,
+              ${cbButtonWithLinkProjection},
+              ${cbButtonsWithLinksProjection},
+              ${cbNavigationWithLinksProjection},
+              ${cbWysiwygWithResolvedLinksProjection}
+            }
+          }
         }
+      }
+    }
+  }
+`
+
+const sectorsListBlockProjection = /* groq */ `
+  _type == "sectorsListBlock" => {
+    ...
+  }
+`
+
+const sectorsMediaBlockProjection = /* groq */ `
+  _type == "sectorsMediaBlock" => {
+    ...,
+    cta{
+      ...,
+      link{
+        ...,
+        "internalPageSlug": internalPage->slug.current
+      }
+    }
+  }
+`
+
+const sectorsSectionProjection = /* groq */ `
+  _type == "sectorsSection" => {
+    ...,
+    rows[]{
+      ...,
+      children[]{
+        ...,
+        ${cbButtonWithLinkProjection},
+        ${cbButtonsWithLinksProjection},
+        ${cbNavigationWithLinksProjection},
+        ${sectorsListBlockProjection},
+        ${sectorsMediaBlockProjection},
+        ${cbWysiwygWithResolvedLinksProjection}
+      },
+      _type == "cbColumns" => {
+        ...,
+        columns[]{
+          ...,
+          children[]{
+            ...,
+            ${cbButtonWithLinkProjection},
+            ${cbButtonsWithLinksProjection},
+            ${cbNavigationWithLinksProjection},
+            ${sectorsListBlockProjection},
+            ${sectorsMediaBlockProjection},
+            ${cbWysiwygWithResolvedLinksProjection}
+          }
+        }
+      }
+    }
+  }
+`
+
+const companyFeaturesBlockProjection = /* groq */ `
+  _type == "companyFeaturesBlock" => {
+    ...,
+    items[]{
+      ...,
+      link{
+        ...,
+        "internalPageSlug": internalPage->slug.current
+      }
+    }
+  }
+`
+
+const companiesSectionProjection = /* groq */ `
+  _type == "companiesSection" => {
+    ...,
+    rows[]{
+      ...,
+      children[]{
+        ...,
+        ${cbButtonWithLinkProjection},
+        ${cbButtonsWithLinksProjection},
+        ${cbNavigationWithLinksProjection},
+        ${companyFeaturesBlockProjection},
+        ${cbWysiwygWithResolvedLinksProjection}
       }
     }
   }
@@ -217,7 +315,9 @@ export const getPageQuery = defineQuery(`
       ${cbButtonsWithLinksProjection},
       ${aboutUsSectionProjection},
       ${cbNavigationWithLinksProjection},
+      ${companiesSectionProjection},
       ${heroSectionProjection},
+      ${sectorsSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
         ...,
@@ -227,7 +327,9 @@ export const getPageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -239,7 +341,9 @@ export const getPageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -251,7 +355,9 @@ export const getPageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -265,7 +371,9 @@ export const getPageQuery = defineQuery(`
             ${cbButtonsWithLinksProjection},
             ${aboutUsSectionProjection},
             ${cbNavigationWithLinksProjection},
+            ${companiesSectionProjection},
             ${heroSectionProjection},
+            ${sectorsSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
         }
@@ -298,7 +406,9 @@ export const homePageQuery = defineQuery(`
       ${cbButtonsWithLinksProjection},
       ${aboutUsSectionProjection},
       ${cbNavigationWithLinksProjection},
+      ${companiesSectionProjection},
       ${heroSectionProjection},
+      ${sectorsSectionProjection},
       ${cbWysiwygWithResolvedLinksProjection},
       _type == "cbGroup" => {
         ...,
@@ -308,7 +418,9 @@ export const homePageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -320,7 +432,9 @@ export const homePageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -332,7 +446,9 @@ export const homePageQuery = defineQuery(`
           ${cbButtonsWithLinksProjection},
           ${aboutUsSectionProjection},
           ${cbNavigationWithLinksProjection},
+          ${companiesSectionProjection},
           ${heroSectionProjection},
+          ${sectorsSectionProjection},
           ${cbWysiwygWithResolvedLinksProjection}
         }
       },
@@ -346,7 +462,9 @@ export const homePageQuery = defineQuery(`
             ${cbButtonsWithLinksProjection},
             ${aboutUsSectionProjection},
             ${cbNavigationWithLinksProjection},
+            ${companiesSectionProjection},
             ${heroSectionProjection},
+            ${sectorsSectionProjection},
             ${cbWysiwygWithResolvedLinksProjection}
           }
         }

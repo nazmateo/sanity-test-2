@@ -7,11 +7,15 @@ import {homePage} from './singletons/homePage'
 import {blockContent} from './objects/blockContent'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {aboutStatCard} from './objects/aboutStatCard'
+import {aboutStatsBlock} from './objects/aboutStatsBlock'
 import {aboutUsSection} from './objects/aboutUsSection'
+import {companiesSection} from './objects/companiesSection'
 import cbButton from './objects/button'
 import cbButtons from './objects/buttons'
 import cbColumn from './objects/column'
 import cbColumns from './objects/columns'
+import {companyFeatureItem} from './objects/companyFeatureItem'
+import {companyFeaturesBlock} from './objects/companyFeaturesBlock'
 import cbCover from './objects/cover'
 import cbGroup from './objects/group'
 import cbHeading from './objects/heading'
@@ -27,6 +31,9 @@ import {menuGroup} from './objects/menuGroup'
 import {menuLink} from './objects/menuLink'
 import {menuDropdownGroup} from './objects/menuDropdownGroup'
 import {menuSubLink} from './objects/menuSubLink'
+import {sectorsListBlock} from './objects/sectorsListBlock'
+import {sectorsMediaBlock} from './objects/sectorsMediaBlock'
+import {sectorsSection} from './objects/sectorsSection'
 import cbNavigationLink from './objects/navigation-link'
 import cbNavigation from './objects/navigation'
 import cbParagraph from './objects/paragraph'
@@ -46,11 +53,15 @@ export const schemaTypes = [
   legalPage,
   // Objects
   aboutStatCard,
+  aboutStatsBlock,
   aboutUsSection,
+  companiesSection,
   cbButton,
   cbButtons,
   cbColumn,
   cbColumns,
+  companyFeatureItem,
+  companyFeaturesBlock,
   cbCover,
   cbGroup,
   cbHeading,
@@ -66,6 +77,9 @@ export const schemaTypes = [
   menuLink,
   menuDropdownGroup,
   menuSubLink,
+  sectorsListBlock,
+  sectorsMediaBlock,
+  sectorsSection,
   cbNavigationLink,
   cbNavigation,
   cbParagraph,

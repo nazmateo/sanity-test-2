@@ -1,9 +1,12 @@
 import AboutUsSection from '@/app/components/AboutUsSection'
 import CTA from '@/app/components/Cta'
+import CompaniesSection from '@/app/components/CompaniesSection'
 import HeroSection from '@/app/components/HeroSection'
 import InfoSection from '@/app/components/InfoSection'
+import SectorsSection from '@/app/components/SectorsSection'
 import CustomPortableText from '@/app/components/PortableText'
 import type {PortableTextBlock} from 'next-sanity'
+import type {ReactNode} from 'react'
 import {Button} from '@/app/components/atoms/button'
 import {Heading} from '@/app/components/atoms/heading'
 import {Html} from '@/app/components/atoms/html'
@@ -24,11 +27,18 @@ import {
   type CbColumn,
   type CbCover,
   type CbGroup,
+  type AboutStatCard,
+  type AboutStatsBlock,
   type AboutUsSection as AboutUsSectionBlock,
+  type CompaniesSection as CompaniesSectionBlock,
+  type CompanyFeatureItem,
   type HeroSection as HeroSectionBlock,
   type CbLink,
   type CbMedia,
   type PageBuilderSection,
+  type SectorsListBlock,
+  type SectorsMediaBlock,
+  type SectorsSection as SectorsSectionBlock,
 } from '@/sanity/lib/types'
 import {dataAttr} from '@/sanity/lib/utils'
 
@@ -492,6 +502,218 @@ function renderAboutTextColumn(
   return {content, ctaHref, ctaLabel}
 }
 
+function extractAboutRows(rows: CbGroup[] | null | undefined) {
+  const introRow = rows?.[0]
+  const statsRow = rows?.[1]
+  const introColumnsBlock = introRow?.children?.find((child) => child._type === 'cbColumns')
+  const statsBlock = statsRow?.children?.find((child) => child._type === 'aboutStatsBlock')
+
+  if (!introColumnsBlock || introColumnsBlock._type !== 'cbColumns') {
+    return {
+      introColumns: null,
+      stats: [],
+    }
+  }
+
+  const stats =
+    statsBlock && statsBlock._type === 'aboutStatsBlock'
+      ? ((statsBlock as AboutStatsBlock).stats || [])
+      : []
+
+  return {
+    introColumns: introColumnsBlock,
+    stats,
+  }
+}
+
+function renderSectorsHeadingGroup(
+  group: CbGroup | undefined,
+  pageId: string,
+  pageType: string,
+  groupPath: string | undefined,
+  isDraftMode: boolean,
+) {
+  if (!group || !groupPath) {
+    return null
+  }
+
+  return (
+    <div>
+      {(group.children || []).map((child, childIndex) => {
+        const childPath = toArrayItemPath(`${groupPath}.children`, child._key, childIndex)
+        const childDataAttr = isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: childPath,
+            }).toString()
+          : undefined
+
+        if (child._type === 'cbHeading') {
+          return (
+            <Heading
+              key={child._key || `sectors-heading-${childIndex}`}
+              as={normalizeHeadingLevel(child.level)}
+              unstyled
+              className="type-h2 text-foreground whitespace-pre-line"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Heading>
+          )
+        }
+
+        if (child._type === 'cbParagraph') {
+          return (
+            <Paragraph
+              key={child._key || `sectors-paragraph-${childIndex}`}
+              unstyled
+              className="type-body text-foreground"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Paragraph>
+          )
+        }
+
+        return (
+          <BlockRenderer
+            key={child._key || `sectors-heading-child-${childIndex}`}
+            block={child}
+            index={childIndex}
+            pageId={pageId}
+            pageType={pageType}
+            blockPath={childPath}
+            isDraftMode={isDraftMode}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+function renderSectorsImage(
+  media: CbMedia | null | undefined,
+  className: string,
+  fallbackAlt = '',
+) {
+  const resolved = resolveMediaUrls(media)
+  const url = resolved.imageUrl || ''
+
+  if (!url) {
+    return null
+  }
+
+  return <Image src={url} alt={resolved.alt || fallbackAlt} unstyled className={className} />
+}
+
+function extractSectorsRowContent(rows: CbGroup[] | null | undefined) {
+  const headingRow = rows?.[0]
+  const bodyRow = rows?.[1]
+  const bodyColumns = bodyRow?.children?.find((child) => child._type === 'cbColumns')
+
+  if (!bodyColumns || bodyColumns._type !== 'cbColumns') {
+    return {
+      headingRow,
+      listBlock: null,
+      mediaBlock: null,
+    }
+  }
+
+  const leftColumn = bodyColumns.columns?.[0]
+  const rightColumn = bodyColumns.columns?.[1]
+  const listBlock =
+    leftColumn?.children?.find((child) => child._type === 'sectorsListBlock') || null
+  const mediaBlock =
+    rightColumn?.children?.find((child) => child._type === 'sectorsMediaBlock') || null
+
+  return {
+    headingRow,
+    listBlock: listBlock && listBlock._type === 'sectorsListBlock' ? (listBlock as SectorsListBlock) : null,
+    mediaBlock: mediaBlock && mediaBlock._type === 'sectorsMediaBlock' ? (mediaBlock as SectorsMediaBlock) : null,
+  }
+}
+
+function renderCompaniesHeadingGroup(
+  group: CbGroup | undefined,
+  pageId: string,
+  pageType: string,
+  groupPath: string | undefined,
+  isDraftMode: boolean,
+) {
+  if (!group || !groupPath) {
+    return null
+  }
+
+  return (
+    <div>
+      {(group.children || []).map((child, childIndex) => {
+        const childPath = toArrayItemPath(`${groupPath}.children`, child._key, childIndex)
+        const childDataAttr = isDraftMode
+          ? dataAttr({
+              id: pageId,
+              type: pageType,
+              path: childPath,
+            }).toString()
+          : undefined
+
+        if (child._type === 'cbParagraph') {
+          return (
+            <Paragraph
+              key={child._key || `companies-paragraph-${childIndex}`}
+              unstyled
+              className="type-companies-body text-white"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Paragraph>
+          )
+        }
+
+        if (child._type === 'cbHeading') {
+          return (
+            <Heading
+              key={child._key || `companies-heading-${childIndex}`}
+              as={normalizeHeadingLevel(child.level)}
+              unstyled
+              className="type-companies-body text-white"
+              data-sanity={childDataAttr}
+            >
+              {child.content || ''}
+            </Heading>
+          )
+        }
+
+        return (
+          <BlockRenderer
+            key={child._key || `companies-heading-child-${childIndex}`}
+            block={child}
+            index={childIndex}
+            pageId={pageId}
+            pageType={pageType}
+            blockPath={childPath}
+            isDraftMode={isDraftMode}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+function extractCompaniesRows(rows: CbGroup[] | null | undefined) {
+  const headingRow = rows?.[0]
+  const featuresRow = rows?.[1]
+  const featuresBlock = featuresRow?.children?.find((child) => child._type === 'companyFeaturesBlock')
+
+  return {
+    headingRow,
+    items:
+      featuresBlock && featuresBlock._type === 'companyFeaturesBlock'
+        ? featuresBlock.items || []
+        : [],
+  }
+}
+
 export default function BlockRenderer({
   block,
   index,
@@ -832,14 +1054,15 @@ export default function BlockRenderer({
     }
     case 'aboutUsSection': {
       const aboutBlock = block as AboutUsSectionBlock
-      const columns = aboutBlock.introContent?.columns || []
+      const {introColumns, stats} = extractAboutRows(aboutBlock.rows)
+      const columns = introColumns?.columns || []
       const imageColumn = columns[0]
       const textColumn = columns[1]
       const imageColumnPath = imageColumn
-        ? toArrayItemPath(`${blockPath}.introContent.columns`, imageColumn._key, 0)
+        ? toArrayItemPath(`${blockPath}.rows[0].children[0].columns`, imageColumn._key, 0)
         : undefined
       const textColumnPath = textColumn
-        ? toArrayItemPath(`${blockPath}.introContent.columns`, textColumn._key, 1)
+        ? toArrayItemPath(`${blockPath}.rows[0].children[0].columns`, textColumn._key, 1)
         : undefined
       const {content, ctaHref, ctaLabel} = renderAboutTextColumn(
         textColumn,
@@ -863,7 +1086,72 @@ export default function BlockRenderer({
             textContent={content}
             ctaHref={ctaHref}
             ctaLabel={ctaLabel}
-            stats={aboutBlock.stats}
+            stats={stats}
+          />
+        </BlockSlot>
+      )
+    }
+    case 'sectorsSection': {
+      const sectorsBlock = block as SectorsSectionBlock
+      const {headingRow, listBlock, mediaBlock} = extractSectorsRowContent(sectorsBlock.rows)
+      const headingPath = headingRow ? toArrayItemPath(`${blockPath}.rows`, headingRow._key, 0) : undefined
+      const ctaHref = mediaBlock?.cta ? resolveLinkHref(mediaBlock.cta.link, mediaBlock.cta.url) : null
+      const ctaLabel = mediaBlock?.cta?.label || mediaBlock?.cta?.text || null
+
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+          unstyled
+        >
+          <SectorsSection
+            sectionId={sectorsBlock.sectionId}
+            heading={renderSectorsHeadingGroup(
+              headingRow || undefined,
+              pageId,
+              pageType,
+              headingPath,
+              isDraftMode,
+            )}
+            leftImage={renderSectorsImage(listBlock?.leftImage, 'sectors-left-image', 'Albatha sectors visual')}
+            rightImage={renderSectorsImage(mediaBlock?.rightImage, 'sectors-media-image', 'Albatha sector image')}
+            ctaHref={ctaHref}
+            ctaLabel={ctaLabel}
+          />
+        </BlockSlot>
+      )
+    }
+    case 'companiesSection': {
+      const companiesBlock = block as CompaniesSectionBlock
+      const {headingRow, items} = extractCompaniesRows(companiesBlock.rows)
+      const headingPath = headingRow ? toArrayItemPath(`${blockPath}.rows`, headingRow._key, 0) : undefined
+
+      return (
+        <BlockSlot
+          refId={key}
+          data-page-id={pageId}
+          data-page-type={pageType}
+          data-sanity={blockDataAttr}
+          unstyled
+        >
+          <CompaniesSection
+            sectionId={companiesBlock.sectionId}
+            backgroundImage={renderSectorsImage(
+              companiesBlock.backgroundImage,
+              'companies-background-image',
+              'Albatha companies background',
+            )}
+            heading={renderCompaniesHeadingGroup(
+              headingRow || undefined,
+              pageId,
+              pageType,
+              headingPath,
+              isDraftMode,
+            )}
+            items={items}
+            resolveHref={(item: CompanyFeatureItem) => resolveLinkHref(item.link, null)}
           />
         </BlockSlot>
       )

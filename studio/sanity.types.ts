@@ -164,6 +164,27 @@ export type CbNavigationLink = {
   link?: CbLink
 }
 
+export type SectorsSection = {
+  _type: 'sectorsSection'
+  sectionId?: string
+  rows: Array<
+    {
+      _key: string
+    } & CbGroup
+  >
+}
+
+export type SectorsMediaBlock = {
+  _type: 'sectorsMediaBlock'
+  rightImage: CbMedia
+  cta: CbButton
+}
+
+export type SectorsListBlock = {
+  _type: 'sectorsListBlock'
+  leftImage: CbMedia
+}
+
 export type MenuSubLink = {
   _type: 'menuSubLink'
   itemId: string
@@ -305,6 +326,12 @@ export type CbGroup = {
       } & CbImage)
     | ({
         _key: string
+      } & AboutStatsBlock)
+    | ({
+        _key: string
+      } & AboutUsSection)
+    | ({
+        _key: string
       } & CbButtons)
     | ({
         _key: string
@@ -314,7 +341,22 @@ export type CbGroup = {
       } & CbGroup)
     | ({
         _key: string
+      } & CompaniesSection)
+    | ({
+        _key: string
+      } & CompanyFeaturesBlock)
+    | ({
+        _key: string
       } & HeroSection)
+    | ({
+        _key: string
+      } & SectorsListBlock)
+    | ({
+        _key: string
+      } & SectorsMediaBlock)
+    | ({
+        _key: string
+      } & SectorsSection)
     | ({
         _key: string
       } & CbList)
@@ -352,6 +394,22 @@ export type CbCover = {
   >
 }
 
+export type CompanyFeaturesBlock = {
+  _type: 'companyFeaturesBlock'
+  items: Array<
+    {
+      _key: string
+    } & CompanyFeatureItem
+  >
+}
+
+export type CompanyFeatureItem = {
+  _type: 'companyFeatureItem'
+  title: string
+  category: string
+  link: CbLink
+}
+
 export type CbColumns = {
   _type: 'cbColumns'
   columns?: Array<
@@ -384,6 +442,12 @@ export type CbColumn = {
       } & CbImage)
     | ({
         _key: string
+      } & AboutStatsBlock)
+    | ({
+        _key: string
+      } & AboutUsSection)
+    | ({
+        _key: string
       } & CbButtons)
     | ({
         _key: string
@@ -393,7 +457,22 @@ export type CbColumn = {
       } & CbGroup)
     | ({
         _key: string
+      } & CompaniesSection)
+    | ({
+        _key: string
+      } & CompanyFeaturesBlock)
+    | ({
+        _key: string
       } & HeroSection)
+    | ({
+        _key: string
+      } & SectorsListBlock)
+    | ({
+        _key: string
+      } & SectorsMediaBlock)
+    | ({
+        _key: string
+      } & SectorsSection)
     | ({
         _key: string
       } & CbList)
@@ -420,6 +499,43 @@ export type CbButton = {
   label?: string
   actionType: 'button' | 'link'
   link?: CbLink
+}
+
+export type CompaniesSection = {
+  _type: 'companiesSection'
+  sectionId?: string
+  backgroundImage: CbMedia
+  rows: Array<
+    {
+      _key: string
+    } & CbGroup
+  >
+}
+
+export type AboutUsSection = {
+  _type: 'aboutUsSection'
+  sectionId?: string
+  rows: Array<
+    {
+      _key: string
+    } & CbGroup
+  >
+}
+
+export type AboutStatsBlock = {
+  _type: 'aboutStatsBlock'
+  stats: Array<
+    {
+      _key: string
+    } & AboutStatCard
+  >
+}
+
+export type AboutStatCard = {
+  _type: 'aboutStatCard'
+  value: string
+  label: string
+  variant: 'dark' | 'blue' | 'outline'
 }
 
 export type Settings = {
@@ -721,6 +837,12 @@ export type HomePage = {
   pageBuilder?: Array<
     | ({
         _key: string
+      } & AboutStatsBlock)
+    | ({
+        _key: string
+      } & AboutUsSection)
+    | ({
+        _key: string
       } & CbButtons)
     | ({
         _key: string
@@ -730,7 +852,22 @@ export type HomePage = {
       } & CbGroup)
     | ({
         _key: string
+      } & CompaniesSection)
+    | ({
+        _key: string
+      } & CompanyFeaturesBlock)
+    | ({
+        _key: string
       } & HeroSection)
+    | ({
+        _key: string
+      } & SectorsListBlock)
+    | ({
+        _key: string
+      } & SectorsMediaBlock)
+    | ({
+        _key: string
+      } & SectorsSection)
     | ({
         _key: string
       } & CbList)
@@ -804,6 +941,12 @@ export type Page = {
   pageBuilder?: Array<
     | ({
         _key: string
+      } & AboutStatsBlock)
+    | ({
+        _key: string
+      } & AboutUsSection)
+    | ({
+        _key: string
       } & CbButtons)
     | ({
         _key: string
@@ -813,7 +956,22 @@ export type Page = {
       } & CbGroup)
     | ({
         _key: string
+      } & CompaniesSection)
+    | ({
+        _key: string
+      } & CompanyFeaturesBlock)
+    | ({
+        _key: string
       } & HeroSection)
+    | ({
+        _key: string
+      } & SectorsListBlock)
+    | ({
+        _key: string
+      } & SectorsMediaBlock)
+    | ({
+        _key: string
+      } & SectorsSection)
     | ({
         _key: string
       } & CbList)
@@ -959,6 +1117,9 @@ export type AllSanitySchemaTypes =
   | CbParagraph
   | CbNavigation
   | CbNavigationLink
+  | SectorsSection
+  | SectorsMediaBlock
+  | SectorsListBlock
   | MenuSubLink
   | MenuDropdownGroup
   | MenuLink
@@ -974,10 +1135,16 @@ export type AllSanitySchemaTypes =
   | CbHeading
   | CbGroup
   | CbCover
+  | CompanyFeaturesBlock
+  | CompanyFeatureItem
   | CbColumns
   | CbColumn
   | CbButtons
   | CbButton
+  | CompaniesSection
+  | AboutUsSection
+  | AboutStatsBlock
+  | AboutStatCard
   | Settings
   | Footer
   | Header

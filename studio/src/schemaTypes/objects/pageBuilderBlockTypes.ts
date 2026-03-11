@@ -12,11 +12,17 @@ export const pageBuilderAtomBlockTypes: BlockType[] = [
 ]
 
 export const pageBuilderContainerBlockTypes: BlockType[] = [
+  defineArrayMember({type: 'aboutStatsBlock'}),
   defineArrayMember({type: 'aboutUsSection'}),
   defineArrayMember({type: 'cbButtons'}),
   defineArrayMember({type: 'cbColumns'}),
   defineArrayMember({type: 'cbGroup'}),
+  defineArrayMember({type: 'companiesSection'}),
+  defineArrayMember({type: 'companyFeaturesBlock'}),
   defineArrayMember({type: 'heroSection'}),
+  defineArrayMember({type: 'sectorsListBlock'}),
+  defineArrayMember({type: 'sectorsMediaBlock'}),
+  defineArrayMember({type: 'sectorsSection'}),
   defineArrayMember({type: 'cbList'}),
   defineArrayMember({type: 'cbNavigation'}),
   defineArrayMember({type: 'cbCover'}),
